@@ -4,12 +4,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.navigation.compose.LocalOwnersProvider
 import org.kulus.android.data.model.GlucoseUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -17,15 +20,43 @@ import org.kulus.android.data.model.GlucoseUnit
 fun AddReadingScreen(
     viewModel: AddReadingViewModel = hiltViewModel(),
     onSuccess: () -> Unit = {},
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onScanClick: () -> Unit = {},
+    scannedValue: Double? = null,
+    scannedUnit: String? = null
 ) {
-    var glucoseValue by remember { mutableStateOf("") }
+    var glucoseValue by remember { mutableStateOf(scannedValue?.toString() ?: "") }
     var name by remember { mutableStateOf("") }
     var comment by remember { mutableStateOf("") }
-    var selectedUnit by remember { mutableStateOf(GlucoseUnit.MMOL_L) }
+    var selectedUnit by remember {
+        mutableStateOf(
+            when (scannedUnit) {
+                "mg/dL" -> GlucoseUnit.MG_DL
+                "mmol/L" -> GlucoseUnit.MMOL_L
+                else -> GlucoseUnit.MMOL_L
+            }
+        )
+    }
     var snackPass by remember { mutableStateOf(false) }
 
     val uiState by viewModel.uiState.collectAsState()
+
+    // Update glucose value if scanned value changes
+    LaunchedEffect(scannedValue) {
+        scannedValue?.let {
+            glucoseValue = it.toString()
+        }
+    }
+
+    LaunchedEffect(scannedUnit) {
+        scannedUnit?.let {
+            selectedUnit = when (it) {
+                "mg/dL" -> GlucoseUnit.MG_DL
+                "mmol/L" -> GlucoseUnit.MMOL_L
+                else -> selectedUnit
+            }
+        }
+    }
 
     // Handle success navigation
     LaunchedEffect(uiState) {
@@ -58,6 +89,31 @@ fun AddReadingScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Scan button
+            OutlinedButton(
+                onClick = onScanClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Default.CameraAlt, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Scan Glucose Reading")
+            }
+
+            // Or divider
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            ) {
+                HorizontalDivider(modifier = Modifier.weight(1f))
+                Text(
+                    text = "or enter manually",
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                HorizontalDivider(modifier = Modifier.weight(1f))
+            }
+
             // Glucose value input
             OutlinedTextField(
                 value = glucoseValue,

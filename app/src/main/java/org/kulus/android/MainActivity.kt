@@ -16,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
 import org.kulus.android.ui.screens.AddReadingScreen
+import org.kulus.android.ui.screens.CameraScreen
 import org.kulus.android.ui.screens.DashboardScreen
 import org.kulus.android.ui.screens.ReadingDetailScreen
 import org.kulus.android.ui.theme.KulusTheme
@@ -61,9 +62,34 @@ fun KulusApp() {
             )
         }
 
-        composable("add_reading") {
+        composable("add_reading") { backStackEntry ->
+            val scannedValue = backStackEntry.savedStateHandle.get<Double>("scannedValue")
+            val scannedUnit = backStackEntry.savedStateHandle.get<String>("scannedUnit")
+
             AddReadingScreen(
                 onSuccess = { navController.popBackStack() },
+                onBackClick = { navController.popBackStack() },
+                onScanClick = { navController.navigate("camera") },
+                scannedValue = scannedValue,
+                scannedUnit = scannedUnit
+            )
+        }
+
+        composable("camera") {
+            CameraScreen(
+                onValueExtracted = { value, unit, photoUri ->
+                    // Navigate to add reading with pre-filled values
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("scannedValue", value)
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("scannedUnit", unit)
+                    navController.popBackStack()
+                },
+                onManualEntry = {
+                    navController.popBackStack()
+                },
                 onBackClick = { navController.popBackStack() }
             )
         }
