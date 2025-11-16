@@ -9,11 +9,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
 import org.kulus.android.ui.screens.AddReadingScreen
+import org.kulus.android.ui.screens.ReadingDetailScreen
 import org.kulus.android.ui.screens.ReadingsListScreen
 import org.kulus.android.ui.theme.KulusTheme
 
@@ -47,7 +50,7 @@ fun KulusApp() {
             ReadingsListScreen(
                 onAddClick = { navController.navigate("add_reading") },
                 onReadingClick = { id ->
-                    // TODO: Implement reading detail screen
+                    navController.navigate("reading_detail/$id")
                 }
             )
         }
@@ -56,6 +59,19 @@ fun KulusApp() {
             AddReadingScreen(
                 onSuccess = { navController.popBackStack() },
                 onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = "reading_detail/{readingId}",
+            arguments = listOf(navArgument("readingId") { type = NavType.StringType })
+        ) {
+            ReadingDetailScreen(
+                onBackClick = { navController.popBackStack() },
+                onEditClick = { id ->
+                    // TODO: Implement edit functionality
+                    // navController.navigate("edit_reading/$id")
+                }
             )
         }
     }
