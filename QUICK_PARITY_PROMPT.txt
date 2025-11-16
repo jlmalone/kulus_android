@@ -1,0 +1,88 @@
+=====================================================
+COPY-PASTE THIS TO YOUR REMOTE AGENT FOR FEATURE PARITY
+=====================================================
+
+I need you to achieve feature parity between the Kulus Android app and the iOS Hamumu app.
+
+**Repository**: https://github.com/jlmalone/kulus_android
+
+**Your Mission**:
+1. Analyze the iOS Hamumu codebase to catalog ALL features
+2. Compare with the current Android implementation
+3. Create a comprehensive gap analysis
+4. Implement missing features in priority order
+
+**CRITICAL: Read FEATURE_PARITY_PROMPT.md first** - it contains:
+- Complete step-by-step process
+- Feature discovery methodology
+- Implementation examples (ReadingDetailScreen, etc.)
+- Code templates for common patterns
+- Testing requirements
+- Success criteria
+
+**Phase 1: Discovery (Do This First)**
+Create these three documents before writing any code:
+
+1. **FEATURE_INVENTORY.md** - Complete list of ALL iOS features
+   - Authentication & onboarding
+   - Bluetooth integration
+   - Glucose data management
+   - Synchronization
+   - UI/UX features
+   - Advanced features (OCR, photos, etc.)
+   - Notifications
+   - Export capabilities
+
+2. **FEATURE_GAP_ANALYSIS.md** - Feature matrix comparing iOS vs Android
+   - What exists in both
+   - What's missing in Android
+   - What Android does better
+   - Priority ratings (High/Medium/Low)
+   - Complexity estimates
+
+3. **IMPLEMENTATION_ROADMAP.md** - Phased implementation plan
+   - Phase 1: Critical missing features (ReadingDetail, Onboarding, Settings)
+   - Phase 2: High-value features (Charts, Photo OCR, Profiles)
+   - Phase 3: Advanced features (Bluetooth, Export, Notifications)
+   - Phase 4: Polish (Animations, Accessibility, Widgets)
+
+**Phase 2: Implementation**
+Start with Priority 1 features:
+1. Reading Detail Screen (EXAMPLE PROVIDED in prompt)
+2. Onboarding Flow
+3. Settings Screen
+4. Charts & Analytics
+5. (Continue based on your roadmap)
+
+**Key Requirements**:
+- Follow existing Android architecture (MVVM, Hilt, Room, Compose)
+- Use Material3 with Matrix neon theme
+- Maintain offline-first approach
+- Document each feature as you implement
+- Test on real device
+- Build frequently: `./gradlew assembleDebug`
+
+**iOS Reference Code Location**:
+You'll need access to the iOS codebase to analyze features. The structure is:
+```
+ios_code/hamumu/HamamuMobile/
+├── Services/ (API, Bluetooth, Data services)
+├── Models/ (GlucoseData, etc.)
+├── Views/ (Dashboard, Onboarding, etc.)
+└── ContentView.swift (Main coordinator)
+```
+
+**Success = 100% Feature Parity**
+Android app must have ALL features from iOS app with equivalent or better UX.
+
+**Start Here**:
+1. Read FEATURE_PARITY_PROMPT.md completely
+2. Review the iOS codebase
+3. Create FEATURE_INVENTORY.md
+4. Create FEATURE_GAP_ANALYSIS.md
+5. Create IMPLEMENTATION_ROADMAP.md
+6. Submit these for review before coding
+
+Let me know when Phase 1 (Discovery) is complete and ready for review.
+
+=====================================================
