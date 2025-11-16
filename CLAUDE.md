@@ -40,64 +40,97 @@ This file provides context for Claude Code agents working on this repository.
 - [x] Glucose level color coding (Green/Orange/Red/Purple)
 - [x] Basic MainActivity with status screen
 
-### 🚧 Next Steps for Remote Agents
+#### UI Screens (Phase 1 - COMPLETED)
+- [x] `ReadingsListScreen` - Full list with pull-to-refresh
+- [x] `AddReadingScreen` - Manual glucose entry form
+- [x] `ReadingDetailScreen` - Detailed view with edit/delete
+- [x] `SettingsScreen` - User preferences and configuration
+- [x] `DashboardScreen` - Main screen with tab navigation
+- [x] `TodayScreen` - Latest reading overview
+- [x] `TrendsScreen` - Placeholder for Phase 2 charts
 
-#### Priority 1: Core UI Screens
-1. **Readings List Screen** (`ui/screens/ReadingsListScreen.kt`)
-   - Display all glucose readings in a LazyColumn
-   - Show reading value, name, timestamp, color indicator
-   - Implement pull-to-refresh for sync
-   - Add search/filter by name
-   - Show sync status (synced vs. local-only)
+#### User Preferences (Phase 1 - COMPLETED)
+- [x] `UserPreferences` data class
+- [x] `PreferencesRepository` with DataStore
+- [x] Default name configuration
+- [x] Preferred unit setting (mmol/L or mg/dL)
+- [x] Theme mode selector (System/Light/Dark)
+- [x] OpenAI API key storage (optional)
+- [x] Clear data and sign out functionality
 
-2. **Add Reading Screen** (`ui/screens/AddReadingScreen.kt`)
-   - Form with OutlinedTextField for glucose value
-   - Name input field
-   - Unit selector (mmol/L vs. mg/dL) with SegmentedButton
-   - Optional comment field
-   - Snack pass toggle with explanation
-   - Submit button that calls `repository.addReading()`
-   - Success/error state handling
+#### Background Sync (Phase 1 - COMPLETED)
+- [x] `SyncWorker` with WorkManager
+- [x] Periodic sync every 30 minutes
+- [x] Network-aware sync (only when connected)
+- [x] Exponential backoff on failure
+- [x] Hilt integration for DI
 
-3. **Reading Detail Screen** (`ui/screens/ReadingDetailScreen.kt`)
-   - Full reading information
-   - Color-coded level indicator
-   - Sync status
-   - Edit/delete options (delete from local only)
-   - Timestamp formatting
+#### Navigation (Phase 1 - COMPLETED)
+- [x] Navigation Compose setup
+- [x] Bottom tab navigation (Today/History/Trends/Settings)
+- [x] Screen routes: dashboard, add_reading, reading_detail
+- [x] Proper back stack management
 
-#### Priority 2: Navigation & ViewModel
-1. **Navigation Setup** (`ui/navigation/NavGraph.kt`)
-   - Use Navigation Compose
-   - Define routes: home, addReading, readingDetail/{id}
-   - Bottom navigation or top app bar navigation
+### 🚧 Next Steps for Remote Agents (Phase 2)
 
-2. **ViewModels**
-   - `ReadingsViewModel` - Observe `repository.getAllReadingsLocal()`
-   - `AddReadingViewModel` - Handle form state and submission
-   - `ReadingDetailViewModel` - Load single reading
+#### Priority 1: High-Value Features
+1. **Photo OCR Reading** (`ui/screens/CameraScreen.kt`, `service/OCRService.kt`)
+   - CameraX integration for photo capture
+   - ML Kit Text Recognition for OCR
+   - Glucose value extraction from text
+   - Unit detection (mg/dL vs mmol/L)
+   - Confidence scoring
+   - Photo storage with readings
 
-#### Priority 3: Sync & Error Handling
-1. **Sync UI** (`ui/components/SyncIndicator.kt`)
-   - Show last sync time
-   - Display sync progress
-   - Error messages for network issues
-   - Retry button
+2. **Charts & Analytics** (`ui/screens/TrendsScreen.kt` - full implementation)
+   - Line chart showing glucose over time (using Vico library)
+   - Time range selector (24h, 7d, 30d, 90d, 1y)
+   - Statistics cards (avg, min, max, std dev)
+   - Time in range calculation
+   - A1C estimate
 
-2. **Background Sync**
-   - WorkManager for periodic sync
-   - Sync unsynced readings on connectivity change
-   - Handle auth token expiration gracefully
+3. **Enhanced Add Reading Form**
+   - Photo capture button
+   - Photo preview
+   - Source selector (Manual/Photo/Bluetooth)
+   - Better validation
 
-#### Priority 4: Polish
-1. **Empty States**
-   - No readings yet message
-   - No internet connection screen
-   - Loading states
+#### Priority 2: Onboarding & Polish
+1. **Onboarding Flow**
+   - Welcome screen
+   - Phone number entry
+   - Password setup with strength indicator
+   - Completion screen
 
-2. **Charts** (Optional)
-   - Line chart for glucose trends using Vico or MPAndroidChart
-   - Statistics cards (avg, min, max)
+2. **Notifications**
+   - Critical glucose level alerts
+   - Customizable thresholds
+   - Do Not Disturb integration
+
+#### Priority 3: Advanced Features
+1. **Profile Management**
+   - Multiple user profiles
+   - Profile switcher
+   - Family sharing
+
+2. **Tags System**
+   - Custom tags for readings (fasting, post-meal, exercise)
+   - Tag management UI
+   - Filter by tags
+
+3. **Data Export**
+   - CSV export
+   - JSON export
+   - PDF report generation
+   - Share functionality
+
+#### Priority 4: Bluetooth Integration
+1. **Contour Next One Integration** (`service/BluetoothService.kt`)
+   - Device scanning
+   - Connection management
+   - GATT communication
+   - Data parsing (IEEE-11073 SFLOAT16)
+   - Background reconnection
 
 ## Key Implementation Notes
 
