@@ -77,6 +77,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.navigation:navigation-compose:2.7.5")
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.32.0")
 
     // Hilt for DI
     implementation("com.google.dagger:hilt-android:2.48")
