@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- Circular background -->
+    <path
+        android:fillColor="#020B09"
+        android:pathData="M24,0 A24,24 0,1,1 24,48 A24,24 0,1,1 24,0 Z"/>
+    <!-- K letter -->
+    <path
+        android:fillColor="#00FFB8"
+        android:pathData="M14,10 L18,10 L18,22 L26,10 L31,10 L22,23 L32,38 L27,38 L18,26 L18,38 L14,38 Z"/>
+    <!-- Glucose drop -->
+    <path
+        android:fillColor="#B8FFE6"
+        android:pathData="M24,18 C24,18 28,22 28,25 C28,27.2 26.2,29 24,29 C21.8,29 20,27.2 20,25 C20,22 24,18 24,18 Z"/>
+</vector>

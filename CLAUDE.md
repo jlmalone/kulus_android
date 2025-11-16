@@ -10,9 +10,15 @@ This file provides context for Claude Code agents working on this repository.
 
 ### ✅ Completed (November 2025)
 
-#### Core Architecture
+#### Build System & Configuration
 - [x] Modern Android project structure (API 26-34)
 - [x] Gradle build configuration with Kotlin DSL
+- [x] Gradle wrapper configured (Gradle 8.2)
+- [x] JDK 17 configured for builds
+- [x] Successfully builds debug APK (15MB)
+- [x] App launcher icons created (Matrix theme)
+
+#### Core Architecture
 - [x] Hilt dependency injection setup
 - [x] Room database for local storage
 - [x] Retrofit + OkHttp for networking
@@ -222,10 +228,25 @@ val levelColor = when (reading.color) {
 
 ### Common Issues
 
-1. **Build errors**: Ensure Gradle JDK is set to 17
+1. **Build errors with JDK**:
+   - Solution: Stop Gradle daemons and rebuild
+   ```bash
+   ./gradlew --stop
+   ./gradlew clean assembleDebug
+   ```
+   - Or use the provided build script: `./build.sh`
+   - Ensure `gradle.properties` has: `org.gradle.java.home=/path/to/jdk-17`
+
 2. **Hilt errors**: Check `@HiltAndroidApp` on Application class
+
 3. **API errors**: Verify BuildConfig fields are generated
+
 4. **Room errors**: Rebuild project after schema changes
+
+5. **Gradle daemon using wrong JDK**:
+   - Clear transform cache: `rm -rf ~/.gradle/caches/transforms-3`
+   - Stop daemons: `./gradlew --stop`
+   - Build without daemon: `./gradlew clean assembleDebug --no-daemon`
 
 ### Dependencies Reference
 
