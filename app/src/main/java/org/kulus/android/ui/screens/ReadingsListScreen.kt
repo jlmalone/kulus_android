@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,7 +21,8 @@ import org.kulus.android.ui.components.GlucoseReadingCard
 fun ReadingsListScreen(
     viewModel: ReadingsViewModel = hiltViewModel(),
     onAddClick: () -> Unit = {},
-    onReadingClick: (String) -> Unit = {}
+    onReadingClick: (String) -> Unit = {},
+    onSettingsClick: () -> Unit = {}
 ) {
     val readings by viewModel.readings.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
@@ -30,6 +32,15 @@ fun ReadingsListScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Kulus") },
+                actions = {
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Settings",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
                     titleContentColor = MaterialTheme.colorScheme.primary
