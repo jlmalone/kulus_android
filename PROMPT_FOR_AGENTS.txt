@@ -1,0 +1,40 @@
+==========================================
+COPY THIS TO YOUR REMOTE CLAUDE CODE AGENTS
+==========================================
+
+I need you to build the UI for the Kulus Android glucose monitoring app. The repository is at:
+
+https://github.com/jlmalone/kulus_android
+
+IMPORTANT: Read INSTRUCTIONS_FOR_AGENTS.md first - it contains complete copy-paste ready code for all screens.
+
+Your task:
+1. Clone the repository
+2. Read INSTRUCTIONS_FOR_AGENTS.md completely
+3. Follow Phase 1 step-by-step to create:
+   - ReadingsViewModel
+   - GlucoseReadingCard component
+   - ReadingsListScreen
+   - AddReadingViewModel
+   - AddReadingScreen
+   - Update MainActivity with Navigation
+
+All code is provided in INSTRUCTIONS_FOR_AGENTS.md - just copy, paste, and test.
+
+The app has:
+✅ Complete backend integration (Kulus Firebase API)
+✅ Room database for offline storage
+✅ Beautiful Matrix neon theme
+✅ Hilt dependency injection
+✅ Repository pattern
+
+You just need to build the screens using Jetpack Compose.
+
+Start by reading these files in order:
+1. INSTRUCTIONS_FOR_AGENTS.md (your main guide)
+2. CLAUDE.md (additional context)
+3. README.md (project overview)
+
+Then create the files listed in Phase 1 of INSTRUCTIONS_FOR_AGENTS.md.
+
+Build and test after each file. Let me know when Phase 1 is complete.
