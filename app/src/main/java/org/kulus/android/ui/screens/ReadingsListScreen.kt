@@ -19,40 +19,48 @@ import org.kulus.android.ui.components.GlucoseReadingCard
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReadingsListScreen(
+    modifier: Modifier = Modifier,
     viewModel: ReadingsViewModel = hiltViewModel(),
     onAddClick: () -> Unit = {},
     onReadingClick: (String) -> Unit = {},
-    onSettingsClick: () -> Unit = {}
+    onSettingsClick: () -> Unit = {},
+    hideTopBar: Boolean = false,
+    hideFab: Boolean = false
 ) {
     val readings by viewModel.readings.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
 
     Scaffold(
+        modifier = modifier,
         topBar = {
-            TopAppBar(
-                title = { Text("Kulus") },
-                actions = {
-                    IconButton(onClick = onSettingsClick) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Settings",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.primary
+            if (!hideTopBar) {
+                TopAppBar(
+                    title = { Text("Kulus") },
+                    actions = {
+                        IconButton(onClick = onSettingsClick) {
+                            Icon(
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = "Settings",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.primary
+                    )
                 )
-            )
+            }
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = onAddClick,
-                containerColor = MaterialTheme.colorScheme.primary
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add reading")
+            if (!hideFab) {
+                FloatingActionButton(
+                    onClick = onAddClick,
+                    containerColor = MaterialTheme.colorScheme.primary
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Add reading")
+                }
             }
         }
     ) { paddingValues ->

@@ -21,7 +21,8 @@ import org.kulus.android.data.preferences.ThemeMode
 fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
     onBackClick: () -> Unit = {},
-    onSignedOut: () -> Unit = {}
+    onSignedOut: () -> Unit = {},
+    hideTopBar: Boolean = false
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val actionState by viewModel.actionState.collectAsState()
@@ -52,22 +53,24 @@ fun SettingsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Settings") },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.primary
+            if (!hideTopBar) {
+                TopAppBar(
+                    title = { Text("Settings") },
+                    navigationIcon = {
+                        IconButton(onClick = onBackClick) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.primary,
+                        navigationIconContentColor = MaterialTheme.colorScheme.primary
+                    )
                 )
-            )
+            }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->

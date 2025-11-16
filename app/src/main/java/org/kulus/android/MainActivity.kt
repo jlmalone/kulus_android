@@ -16,9 +16,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
 import org.kulus.android.ui.screens.AddReadingScreen
+import org.kulus.android.ui.screens.DashboardScreen
 import org.kulus.android.ui.screens.ReadingDetailScreen
-import org.kulus.android.ui.screens.ReadingsListScreen
-import org.kulus.android.ui.screens.SettingsScreen
 import org.kulus.android.ui.theme.KulusTheme
 
 @AndroidEntryPoint
@@ -45,15 +44,20 @@ fun KulusApp() {
 
     NavHost(
         navController = navController,
-        startDestination = "readings_list"
+        startDestination = "dashboard"
     ) {
-        composable("readings_list") {
-            ReadingsListScreen(
+        composable("dashboard") {
+            DashboardScreen(
                 onAddClick = { navController.navigate("add_reading") },
                 onReadingClick = { id ->
                     navController.navigate("reading_detail/$id")
                 },
-                onSettingsClick = { navController.navigate("settings") }
+                onSignedOut = {
+                    // Navigate back to dashboard after sign out
+                    navController.navigate("dashboard") {
+                        popUpTo("dashboard") { inclusive = true }
+                    }
+                }
             )
         }
 
@@ -73,18 +77,6 @@ fun KulusApp() {
                 onEditClick = { id ->
                     // TODO: Implement edit functionality
                     // navController.navigate("edit_reading/$id")
-                }
-            )
-        }
-
-        composable("settings") {
-            SettingsScreen(
-                onBackClick = { navController.popBackStack() },
-                onSignedOut = {
-                    // Navigate back to readings list after sign out
-                    navController.navigate("readings_list") {
-                        popUpTo("readings_list") { inclusive = true }
-                    }
                 }
             )
         }
