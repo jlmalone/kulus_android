@@ -7,18 +7,20 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
-import org.kulus.android.ui.screens.AddReadingScreen
-import org.kulus.android.ui.screens.CameraScreen
-import org.kulus.android.ui.screens.DashboardScreen
-import org.kulus.android.ui.screens.ReadingDetailScreen
+import kotlinx.coroutines.launch
+import org.kulus.android.data.preferences.UserPreferences
+import org.kulus.android.ui.onboarding.OnboardingFlow
+import org.kulus.android.ui.screens.*
 import org.kulus.android.ui.theme.KulusTheme
 
 @AndroidEntryPoint
@@ -41,6 +43,30 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun KulusApp() {
+    val settingsViewModel: SettingsViewModel = hiltViewModel()
+    val userPrefs by settingsViewModel.userPreferences.collectAsState(initial = UserPreferences())
+    val scope = rememberCoroutineScope()
+
+    // Check if onboarding is needed
+    val needsOnboarding = userPrefs.defaultName == "mobile-user"
+
+    if (needsOnboarding) {
+        // Show onboarding flow - blocks main app completely
+        OnboardingFlow(
+            onComplete = { userName ->
+                scope.launch {
+                    settingsViewModel.updateDefaultName(userName)
+                }
+            }
+        )
+    } else {
+        // Main app navigation
+        MainAppNavigation()
+    }
+}
+
+@Composable
+fun MainAppNavigation() {
     val navController = rememberNavController()
 
     NavHost(

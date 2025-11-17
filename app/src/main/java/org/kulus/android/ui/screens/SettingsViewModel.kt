@@ -38,6 +38,9 @@ class SettingsViewModel @Inject constructor(
     private val _actionState = MutableStateFlow<ActionState>(ActionState.Idle)
     val actionState: StateFlow<ActionState> = _actionState.asStateFlow()
 
+    // Expose user preferences for direct access (e.g., for setup dialog)
+    val userPreferences = preferencesRepository.userPreferencesFlow
+
     init {
         loadPreferences()
     }

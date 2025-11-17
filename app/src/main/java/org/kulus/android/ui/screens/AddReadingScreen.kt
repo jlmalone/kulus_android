@@ -32,8 +32,11 @@ fun AddReadingScreen(
     scannedUnit: String? = null,
     scannedPhotoUri: String? = null
 ) {
+    // Auto-populate user's name from preferences
+    val userPrefs by viewModel.userPreferences.collectAsState(initial = org.kulus.android.data.preferences.UserPreferences())
+
     var glucoseValue by remember { mutableStateOf(scannedValue?.toString() ?: "") }
-    var name by remember { mutableStateOf("") }
+    var name by remember(userPrefs) { mutableStateOf(userPrefs.defaultName) }
     var comment by remember { mutableStateOf("") }
     var selectedUnit by remember {
         mutableStateOf(

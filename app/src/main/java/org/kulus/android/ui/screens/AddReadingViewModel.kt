@@ -8,16 +8,21 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.kulus.android.data.model.GlucoseUnit
+import org.kulus.android.data.preferences.PreferencesRepository
 import org.kulus.android.data.repository.KulusRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class AddReadingViewModel @Inject constructor(
-    private val repository: KulusRepository
+    private val repository: KulusRepository,
+    private val preferencesRepository: PreferencesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<AddReadingUiState>(AddReadingUiState.Idle)
     val uiState: StateFlow<AddReadingUiState> = _uiState.asStateFlow()
+
+    // Expose user preferences for auto-populating name
+    val userPreferences = preferencesRepository.userPreferencesFlow
 
     fun addReading(
         reading: Double,

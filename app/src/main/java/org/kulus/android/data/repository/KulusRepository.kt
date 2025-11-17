@@ -9,6 +9,7 @@ import org.kulus.android.data.api.KulusApiService
 import org.kulus.android.data.local.GlucoseReadingDao
 import org.kulus.android.data.local.TokenStore
 import org.kulus.android.data.model.*
+import org.kulus.android.data.preferences.PreferencesRepository
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
@@ -20,7 +21,8 @@ import javax.inject.Singleton
 class KulusRepository @Inject constructor(
     private val apiService: KulusApiService,
     private val glucoseReadingDao: GlucoseReadingDao,
-    private val tokenStore: TokenStore
+    private val tokenStore: TokenStore,
+    private val preferencesRepository: PreferencesRepository
 ) {
 
     private val numberFormatter = DecimalFormat("0.#", DecimalFormatSymbols(Locale.US)).apply {
@@ -75,20 +77,31 @@ class KulusRepository @Inject constructor(
     }
 
     // Remote data operations
+    // CRITICAL PRIVACY FIX: Only sync readings for current user
     suspend fun syncReadingsFromServer(): Result<List<GlucoseReading>> = withContext(Dispatchers.IO) {
         try {
             ensureAuthenticated().getOrThrow()
 
-            val response = apiService.getAllReadings()
+            // Get current user's name from preferences
+            val userPrefs = preferencesRepository.userPreferencesFlow.first()
+            val userName = userPrefs.defaultName
+
+            android.util.Log.d("KulusRepository", "🔒 [SYNC] Fetching readings for user: $userName")
+
+            // Use filtered endpoint instead of getAllReadings
+            val response = apiService.getReadingsByName(name = userName)
             if (response.isSuccessful) {
                 val readingsResponse = response.body()
                 val readings = readingsResponse?.readings?.mapNotNull { dto ->
                     try {
                         dto.toGlucoseReading()
                     } catch (e: Exception) {
+                        android.util.Log.w("KulusRepository", "Failed to parse reading: ${e.message}")
                         null // Skip invalid readings
                     }
                 } ?: emptyList()
+
+                android.util.Log.d("KulusRepository", "✅ [SYNC] Fetched ${readings.size} readings from Kulus for $userName")
 
                 // Save to local database
                 glucoseReadingDao.insertReadings(readings)
@@ -98,6 +111,7 @@ class KulusRepository @Inject constructor(
                 Result.failure(Exception("HTTP ${response.code()}: ${response.message()}"))
             }
         } catch (e: Exception) {
+            android.util.Log.e("KulusRepository", "❌ [SYNC] Sync failed: ${e.message}", e)
             Result.failure(e)
         }
     }
