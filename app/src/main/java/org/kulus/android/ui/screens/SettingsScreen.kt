@@ -1,5 +1,6 @@
 package org.kulus.android.ui.screens
 
+import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -10,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -32,6 +34,7 @@ fun SettingsScreen(
     var showApiKeyDialog by remember { mutableStateOf(false) }
 
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     // Handle action states
     LaunchedEffect(actionState) {
@@ -46,6 +49,12 @@ fun SettingsScreen(
             }
             is ActionState.SignedOut -> {
                 onSignedOut()
+            }
+            is ActionState.ExportReady -> {
+                // Launch share intent
+                context.startActivity(Intent.createChooser(state.shareIntent, "Share Export"))
+                snackbarHostState.showSnackbar("Exported ${state.readingCount} readings")
+                viewModel.resetActionState()
             }
             else -> { }
         }
@@ -365,6 +374,27 @@ private fun SettingsContent(
 
         // Data Section
         SettingsSectionHeader("Data Management")
+
+        SettingsClickableOption(
+            title = "Export as CSV",
+            subtitle = "Export all readings to CSV format",
+            icon = Icons.Default.TableChart,
+            onClick = { viewModel.exportData("csv") }
+        )
+
+        SettingsClickableOption(
+            title = "Export as JSON",
+            subtitle = "Export all readings to JSON format",
+            icon = Icons.Default.DataObject,
+            onClick = { viewModel.exportData("json") }
+        )
+
+        SettingsClickableOption(
+            title = "Export as Text Report",
+            subtitle = "Export readings with statistics",
+            icon = Icons.Default.Description,
+            onClick = { viewModel.exportData("text") }
+        )
 
         SettingsClickableOption(
             title = "Clear Local Data",

@@ -1,5 +1,6 @@
 package org.kulus.android.ui.screens
 
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,6 +13,9 @@ import org.kulus.android.data.preferences.PreferencesRepository
 import org.kulus.android.data.preferences.ThemeMode
 import org.kulus.android.data.preferences.UserPreferences
 import org.kulus.android.data.repository.KulusRepository
+import org.kulus.android.util.DataExportService
+import org.kulus.android.util.GlucoseStatistics
+import java.io.File
 import javax.inject.Inject
 
 sealed class SettingsUiState {
@@ -24,7 +28,8 @@ sealed class SettingsUiState {
 class SettingsViewModel @Inject constructor(
     private val preferencesRepository: PreferencesRepository,
     private val kulusRepository: KulusRepository,
-    private val tokenStore: TokenStore
+    private val tokenStore: TokenStore,
+    private val dataExportService: DataExportService
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<SettingsUiState>(SettingsUiState.Loading)
@@ -130,6 +135,51 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun exportData(format: String) {
+        viewModelScope.launch {
+            _actionState.value = ActionState.Loading("Preparing export...")
+            try {
+                // Get all readings
+                val readings = kulusRepository.getAllReadingsLocal().first()
+
+                if (readings.isEmpty()) {
+                    _actionState.value = ActionState.Error("No readings to export")
+                    return@launch
+                }
+
+                // Export based on format
+                val result = when (format.lowercase()) {
+                    "csv" -> dataExportService.exportToCSV(readings)
+                    "json" -> dataExportService.exportToJSON(readings)
+                    "text" -> {
+                        val statistics = GlucoseStatistics.calculate(readings)
+                        dataExportService.exportToText(readings, statistics)
+                    }
+                    else -> Result.failure(IllegalArgumentException("Unknown format: $format"))
+                }
+
+                result.onSuccess { file ->
+                    val mimeType = when (format.lowercase()) {
+                        "csv" -> "text/csv"
+                        "json" -> "application/json"
+                        "text" -> "text/plain"
+                        else -> "application/octet-stream"
+                    }
+
+                    val shareIntent = dataExportService.shareFile(file, mimeType)
+                    _actionState.value = ActionState.ExportReady(shareIntent, readings.size)
+                }.onFailure { error ->
+                    _actionState.value = ActionState.Error("Export failed: ${error.message}")
+                }
+
+                // Cleanup old exports
+                dataExportService.cleanupOldExports()
+            } catch (e: Exception) {
+                _actionState.value = ActionState.Error("Export failed: ${e.message}")
+            }
+        }
+    }
+
     fun resetActionState() {
         _actionState.value = ActionState.Idle
     }
@@ -145,4 +195,5 @@ sealed class ActionState {
     data class Success(val message: String) : ActionState()
     data class Error(val message: String) : ActionState()
     object SignedOut : ActionState()
+    data class ExportReady(val shareIntent: Intent, val readingCount: Int) : ActionState()
 }

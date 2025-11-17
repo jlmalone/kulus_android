@@ -5,4 +5,7 @@
 
     <!-- External cache for sharing -->
     <external-cache-path name="external_images" path="images/" />
+
+    <!-- Cache directory for exports -->
+    <cache-path name="exports" path="exports/" />
 </paths>
