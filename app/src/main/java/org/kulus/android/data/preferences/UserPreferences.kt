@@ -17,7 +17,12 @@ data class UserPreferences(
     val onboardingCompleted: Boolean = false,
     val phoneNumber: String? = null,
     val selectedDeviceType: DeviceType = DeviceType.CONTOUR_NEXT_ONE,
-    val smsAlertsEnabled: Boolean = true
+    val smsAlertsEnabled: Boolean = true,
+
+    // Notification preferences
+    val localAlertsEnabled: Boolean = true,
+    val criticalLowThreshold: Double = 3.0,    // mmol/L (~54 mg/dL)
+    val criticalHighThreshold: Double = 13.9   // mmol/L (~250 mg/dL)
 )
 
 enum class DeviceType(val displayName: String) {

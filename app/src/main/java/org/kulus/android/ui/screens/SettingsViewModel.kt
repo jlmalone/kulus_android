@@ -97,6 +97,16 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun updateLocalAlertsEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            try {
+                preferencesRepository.updateLocalAlertsEnabled(enabled)
+            } catch (e: Exception) {
+                _actionState.value = ActionState.Error("Failed to update alerts: ${e.message}")
+            }
+        }
+    }
+
     fun clearLocalData() {
         viewModelScope.launch {
             _actionState.value = ActionState.Loading("Clearing data...")

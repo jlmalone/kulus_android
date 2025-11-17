@@ -31,6 +31,9 @@ class PreferencesRepository @Inject constructor(
         val PHONE_NUMBER = stringPreferencesKey("phone_number")
         val SELECTED_DEVICE_TYPE = intPreferencesKey("selected_device_type")
         val SMS_ALERTS_ENABLED = booleanPreferencesKey("sms_alerts_enabled")
+        val LOCAL_ALERTS_ENABLED = booleanPreferencesKey("local_alerts_enabled")
+        val CRITICAL_LOW_THRESHOLD = doublePreferencesKey("critical_low_threshold")
+        val CRITICAL_HIGH_THRESHOLD = doublePreferencesKey("critical_high_threshold")
     }
 
     val userPreferencesFlow: Flow<UserPreferences> = context.dataStore.data
@@ -58,7 +61,10 @@ class PreferencesRepository @Inject constructor(
                 selectedDeviceType = DeviceType.fromOrdinal(
                     preferences[PreferencesKeys.SELECTED_DEVICE_TYPE] ?: 0
                 ),
-                smsAlertsEnabled = preferences[PreferencesKeys.SMS_ALERTS_ENABLED] ?: true
+                smsAlertsEnabled = preferences[PreferencesKeys.SMS_ALERTS_ENABLED] ?: true,
+                localAlertsEnabled = preferences[PreferencesKeys.LOCAL_ALERTS_ENABLED] ?: true,
+                criticalLowThreshold = preferences[PreferencesKeys.CRITICAL_LOW_THRESHOLD] ?: 3.0,
+                criticalHighThreshold = preferences[PreferencesKeys.CRITICAL_HIGH_THRESHOLD] ?: 13.9
             )
         }
 
@@ -139,6 +145,19 @@ class PreferencesRepository @Inject constructor(
     suspend fun updateSmsAlertsEnabled(enabled: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.SMS_ALERTS_ENABLED] = enabled
+        }
+    }
+
+    suspend fun updateLocalAlertsEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.LOCAL_ALERTS_ENABLED] = enabled
+        }
+    }
+
+    suspend fun updateCriticalThresholds(low: Double, high: Double) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.CRITICAL_LOW_THRESHOLD] = low
+            preferences[PreferencesKeys.CRITICAL_HIGH_THRESHOLD] = high
         }
     }
 }
