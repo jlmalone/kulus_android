@@ -8,8 +8,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
@@ -109,29 +109,28 @@ fun GlucoseChart(
                 chart = lineChart(
                     lines = listOf(
                         lineSpec(
-                            lineColor = primaryColor.toArgb(),
+                            lineColor = primaryColor,
                             lineBackgroundShader = null,
-                            lineThicknessDp = 2f,
                             point = null  // No points, just line
                         )
                     ),
                     targetVerticalAxisPosition = AxisPosition.Vertical.Start
                 ),
-                model = chartEntryModel,
+                model = chartEntryModel!!,
                 startAxis = rememberStartAxis(
                     valueFormatter = valueFormatter,
-                    label = textComponent {
-                        color = onSurfaceColor.toArgb()
-                        textSizeSp = 12f
-                    },
+                    label = textComponent(
+                        color = onSurfaceColor,
+                        textSize = 12.sp
+                    ),
                     guideline = null
                 ),
                 bottomAxis = rememberBottomAxis(
                     valueFormatter = dateFormatter,
-                    label = textComponent {
-                        color = onSurfaceColor.toArgb()
-                        textSizeSp = 10f
-                    },
+                    label = textComponent(
+                        color = onSurfaceColor,
+                        textSize = 10.sp
+                    ),
                     guideline = null
                 ),
                 modifier = Modifier

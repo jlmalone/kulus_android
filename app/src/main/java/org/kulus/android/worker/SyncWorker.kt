@@ -31,19 +31,19 @@ class SyncWorker @AssistedInject constructor(
             repository.syncUnsyncedReadings()
 
             // Then, download latest readings from server
-            repository.syncReadingsFromServer()
-                .onSuccess {
-                    // Success - all readings synced
-                    Result.success()
+            val result = repository.syncReadingsFromServer()
+
+            if (result.isSuccess) {
+                // Success - all readings synced
+                Result.success()
+            } else {
+                // Check if we should retry
+                if (runAttemptCount < MAX_RETRIES) {
+                    Result.retry()
+                } else {
+                    Result.failure()
                 }
-                .onFailure { error ->
-                    // Check if we should retry
-                    if (runAttemptCount < MAX_RETRIES) {
-                        Result.retry()
-                    } else {
-                        Result.failure()
-                    }
-                }
+            }
         } catch (e: Exception) {
             // Network or other errors - retry if under max attempts
             if (runAttemptCount < MAX_RETRIES) {

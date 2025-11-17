@@ -27,6 +27,7 @@ import java.util.Locale
  * - Time in range analysis
  * - A1C estimate
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrendsScreen(
     modifier: Modifier = Modifier,
@@ -108,6 +109,7 @@ fun TrendsScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TimeRangeSelector(
     selectedRange: TimeRange,

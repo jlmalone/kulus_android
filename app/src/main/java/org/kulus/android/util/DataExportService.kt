@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.core.content.FileProvider
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.kulus.android.data.model.GlucoseReading
 import java.io.File
 import java.text.SimpleDateFormat
@@ -17,7 +18,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class DataExportService @Inject constructor(
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) {
 
     private val gson: Gson = GsonBuilder()

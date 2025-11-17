@@ -159,14 +159,14 @@ fun AddReadingScreen(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    HorizontalDivider(modifier = Modifier.weight(1f))
+                    Divider(modifier = Modifier.weight(1f))
                     Text(
                         text = "or enter manually",
                         modifier = Modifier.padding(horizontal = 8.dp),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    HorizontalDivider(modifier = Modifier.weight(1f))
+                    Divider(modifier = Modifier.weight(1f))
                 }
             }
 

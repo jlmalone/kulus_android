@@ -19,11 +19,10 @@ class KulusApplication : Application(), Configuration.Provider {
         setupPeriodicSync()
     }
 
-    override fun getWorkManagerConfiguration(): Configuration {
-        return Configuration.Builder()
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
             .setWorkerFactory(workerFactory)
             .build()
-    }
 
     private fun setupPeriodicSync() {
         val constraints = Constraints.Builder()
