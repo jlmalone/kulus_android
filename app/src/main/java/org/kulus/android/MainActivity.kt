@@ -9,22 +9,27 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
-import org.kulus.android.data.preferences.UserPreferences
-import org.kulus.android.ui.onboarding.OnboardingFlow
-import org.kulus.android.ui.screens.*
+import org.kulus.android.data.preferences.PreferencesRepository
+import org.kulus.android.ui.screens.AddReadingScreen
+import org.kulus.android.ui.screens.CameraScreen
+import org.kulus.android.ui.screens.DashboardScreen
+import org.kulus.android.ui.screens.ReadingDetailScreen
+import org.kulus.android.ui.screens.onboarding.OnboardingNav
 import org.kulus.android.ui.theme.KulusTheme
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var preferencesRepository: PreferencesRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -34,7 +39,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    KulusApp()
+                    KulusApp(preferencesRepository)
                 }
             }
         }
@@ -42,31 +47,30 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun KulusApp() {
-    val settingsViewModel: SettingsViewModel = hiltViewModel()
-    val userPrefs by settingsViewModel.userPreferences.collectAsState(initial = UserPreferences())
-    val scope = rememberCoroutineScope()
+fun KulusApp(preferencesRepository: PreferencesRepository) {
+    val userPreferences by preferencesRepository.userPreferencesFlow.collectAsState(
+        initial = org.kulus.android.data.preferences.UserPreferences()
+    )
+    var showOnboarding by remember { mutableStateOf(false) }
 
-    // Check if onboarding is needed
-    val needsOnboarding = userPrefs.defaultName == "mobile-user"
+    // Determine initial state based on onboarding completion
+    LaunchedEffect(userPreferences.onboardingCompleted) {
+        showOnboarding = !userPreferences.onboardingCompleted
+    }
 
-    if (needsOnboarding) {
-        // Show onboarding flow - blocks main app completely
-        OnboardingFlow(
-            onComplete = { userName ->
-                scope.launch {
-                    settingsViewModel.updateDefaultName(userName)
-                }
+    if (showOnboarding) {
+        OnboardingNav(
+            onOnboardingComplete = {
+                showOnboarding = false
             }
         )
     } else {
-        // Main app navigation
-        MainAppNavigation()
+        MainApp()
     }
 }
 
 @Composable
-fun MainAppNavigation() {
+fun MainApp() {
     val navController = rememberNavController()
 
     NavHost(

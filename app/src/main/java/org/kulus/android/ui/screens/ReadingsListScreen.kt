@@ -3,11 +3,13 @@ package org.kulus.android.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
@@ -38,6 +40,8 @@ fun ReadingsListScreen(
     val errorMessage by viewModel.errorMessage.collectAsState()
     val lastSyncTime by viewModel.lastSyncTime.collectAsState()
     val syncSuccessMessage by viewModel.syncSuccessMessage.collectAsState()
+    val availableTags by viewModel.availableTags.collectAsState()
+    val selectedTags by viewModel.selectedTags.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -109,6 +113,16 @@ fun ReadingsListScreen(
                     unsyncedCount = readings.count { !it.synced },
                     onSyncClick = { viewModel.syncFromServer() }
                 )
+
+                // Tag filters (only show if there are tags)
+                if (availableTags.isNotEmpty()) {
+                    TagFilterBar(
+                        availableTags = availableTags,
+                        selectedTags = selectedTags,
+                        onTagToggle = { tag -> viewModel.toggleTagFilter(tag) },
+                        onClearFilters = { viewModel.clearTagFilters() }
+                    )
+                }
 
                 if (readings.isEmpty()) {
                     // Empty state
@@ -215,6 +229,78 @@ private fun SyncStatusBar(
                     imageVector = Icons.Default.Sync,
                     contentDescription = "Sync now",
                     tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TagFilterBar(
+    availableTags: List<String>,
+    selectedTags: Set<String>,
+    onTagToggle: (String) -> Unit,
+    onClearFilters: () -> Unit
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 1.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.FilterList,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Filter by Tags",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+                if (selectedTags.isNotEmpty()) {
+                    TextButton(onClick = onClearFilters) {
+                        Text("Clear", style = MaterialTheme.typography.labelMedium)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(availableTags) { tag ->
+                    FilterChip(
+                        selected = tag in selectedTags,
+                        onClick = { onTagToggle(tag) },
+                        label = { Text(tag) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    )
+                }
+            }
+
+            if (selectedTags.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Showing ${selectedTags.size} tag${if (selectedTags.size > 1) "s" else ""}: ${selectedTags.joinToString(", ")}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

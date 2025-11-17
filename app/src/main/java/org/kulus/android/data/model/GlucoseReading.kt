@@ -19,8 +19,19 @@ data class GlucoseReading(
     val color: String? = null,
     val glucoseLevel: Int? = null,
     val synced: Boolean = false,
-    val photoUri: String? = null  // URI of photo associated with reading
-)
+    val photoUri: String? = null,  // URI of photo associated with reading
+    val tags: String? = null  // Comma-separated tags (e.g., "fasting,morning,pre-meal")
+) {
+    fun getTagsList(): List<String> {
+        return tags?.split(",")?.map { it.trim() }?.filter { it.isNotEmpty() } ?: emptyList()
+    }
+
+    companion object {
+        fun tagsToString(tagsList: List<String>): String {
+            return tagsList.filter { it.isNotBlank() }.joinToString(",")
+        }
+    }
+}
 
 data class KulusTimestamp(
     @SerializedName("_seconds")
