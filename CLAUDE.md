@@ -107,44 +107,76 @@ This file provides context for Claude Code agents working on this repository.
   - Auto-cleanup of old exports (keep last 5)
   - Export UI in Settings Data Management section
 
-### 🚧 Next Steps for Remote Agents (Phase 3 - Medium Priority)
+### ✅ Phase 3 Features (COMPLETED - November 2025)
 
-#### Priority 1: Onboarding & Polish
-1. **Onboarding Flow**
-   - Welcome screen
-   - Phone number entry
-   - Password setup with strength indicator
-   - Completion screen
+#### Onboarding Flow - COMPLETE
+- [x] **Complete 6-Screen Onboarding Experience**
+  - WelcomeScreen - App introduction and feature overview
+  - PhoneNumberScreen - Optional SMS alert setup
+  - ProfileNameScreen - Display name configuration
+  - DeviceSelectionScreen - Meter type selection (Contour Next One)
+  - NotificationPreferencesScreen - Alert preferences and Snack Pass explanation
+  - CompletionScreen - Summary and next steps
+  - OnboardingViewModel with state management
+  - OnboardingNav navigation graph
+  - First-run detection and routing in MainActivity
+  - DeviceType enum for meter selection
+  - Persistent onboarding completion tracking
 
-2. **Notifications**
-   - Critical glucose level alerts
-   - Customizable thresholds
-   - Do Not Disturb integration
+#### Notification System - COMPLETE
+- [x] **Local Glucose Alerts**
+  - NotificationService with critical level detection
+  - Critical high threshold (>13.9 mmol/L / ~250 mg/dL)
+  - Critical low threshold (<3.0 mmol/L / ~54 mg/dL)
+  - Notification channels (Alerts & Reminders)
+  - Android 13+ POST_NOTIFICATIONS permission handling
+  - Respects "Snack Pass" flag to suppress expected highs
+  - Integration with AddReadingViewModel
+  - Settings toggle for local alerts
+  - Separate from backend SMS alerts for multi-layered safety
 
-#### Priority 3: Advanced Features
+#### Tags System - COMPLETE
+- [x] **Reading Categorization**
+  - Tags field in GlucoseReading entity
+  - Database schema v3 with tags migration
+  - 12 predefined tags (Fasting, Pre-Meal, Post-Meal, Exercise, Bedtime, etc.)
+  - TagSelector composable with FilterChips
+  - Multi-select tag functionality
+  - Tag display in GlucoseReadingCard with AssistChips
+  - Integration with AddReadingScreen
+  - Tags stored as comma-separated strings in Room
+
+### 🚧 Next Steps for Remote Agents (Phase 4 - Lower Priority)
+
+#### Advanced Features
 1. **Profile Management**
    - Multiple user profiles
    - Profile switcher
    - Family sharing
 
-2. **Tags System**
-   - Custom tags for readings (fasting, post-meal, exercise)
-   - Tag management UI
-   - Filter by tags
+2. **Tag Filtering**
+   - Filter readings by tags in ReadingsListScreen
+   - Tag analytics in TrendsScreen
+   - Tag management UI in Settings
 
-3. **Data Export**
-   - CSV export
-   - JSON export
-   - PDF report generation
-   - Share functionality
-
-#### Priority 4: Bluetooth Integration
+#### Bluetooth Integration
 1. **Contour Next One Integration** (`service/BluetoothService.kt`)
    - Device scanning
    - Connection management
    - GATT communication
    - Data parsing (IEEE-11073 SFLOAT16)
    - Background reconnection
+
+#### Additional Polish
+1. **Testing Reminders**
+   - Scheduled local notifications
+   - Customizable reminder times
+   - Do Not Disturb integration
+
+2. **Accessibility Enhancements**
+   - Elder mode with larger typography
+   - Content descriptions for all icons
+   - Non-color severity indicators
 
 ## Key Implementation Notes
 
@@ -375,6 +407,6 @@ git push origin feature/readings-list-screen
 ---
 
 **Created**: November 2025
-**Last Updated**: November 2025 (Phase 2 Complete)
-**Status**: Phase 1 & 2 complete - Full feature parity with iOS for core & high-value features
+**Last Updated**: November 2025 (Phase 3 Complete)
+**Status**: Phases 1, 2 & 3 complete - Core features, high-value features, and onboarding/notifications/tags
 **GitHub**: https://github.com/jlmalone/kulus_android
