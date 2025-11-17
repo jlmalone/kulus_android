@@ -28,15 +28,25 @@ class ReadingsViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
+    private val _lastSyncTime = MutableStateFlow<Long?>(null)
+    val lastSyncTime: StateFlow<Long?> = _lastSyncTime.asStateFlow()
+
+    private val _syncSuccessMessage = MutableStateFlow<String?>(null)
+    val syncSuccessMessage: StateFlow<String?> = _syncSuccessMessage.asStateFlow()
+
     fun syncFromServer() {
         viewModelScope.launch {
             _isRefreshing.value = true
+            _syncSuccessMessage.value = null
             repository.syncReadingsFromServer()
-                .onSuccess {
+                .onSuccess { readings ->
                     _errorMessage.value = null
+                    _lastSyncTime.value = System.currentTimeMillis()
+                    _syncSuccessMessage.value = "Synced ${readings.size} readings"
                 }
                 .onFailure { error ->
                     _errorMessage.value = error.message
+                    _syncSuccessMessage.value = null
                 }
             _isRefreshing.value = false
         }
@@ -44,5 +54,9 @@ class ReadingsViewModel @Inject constructor(
 
     fun clearError() {
         _errorMessage.value = null
+    }
+
+    fun clearSuccessMessage() {
+        _syncSuccessMessage.value = null
     }
 }
