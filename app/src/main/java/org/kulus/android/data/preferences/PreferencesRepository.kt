@@ -34,6 +34,13 @@ class PreferencesRepository @Inject constructor(
         val LOCAL_ALERTS_ENABLED = booleanPreferencesKey("local_alerts_enabled")
         val CRITICAL_LOW_THRESHOLD = doublePreferencesKey("critical_low_threshold")
         val CRITICAL_HIGH_THRESHOLD = doublePreferencesKey("critical_high_threshold")
+        val REMINDERS_ENABLED = booleanPreferencesKey("reminders_enabled")
+        val MORNING_REMINDER_ENABLED = booleanPreferencesKey("morning_reminder_enabled")
+        val MORNING_REMINDER_HOUR = intPreferencesKey("morning_reminder_hour")
+        val MORNING_REMINDER_MINUTE = intPreferencesKey("morning_reminder_minute")
+        val EVENING_REMINDER_ENABLED = booleanPreferencesKey("evening_reminder_enabled")
+        val EVENING_REMINDER_HOUR = intPreferencesKey("evening_reminder_hour")
+        val EVENING_REMINDER_MINUTE = intPreferencesKey("evening_reminder_minute")
     }
 
     val userPreferencesFlow: Flow<UserPreferences> = context.dataStore.data
@@ -64,7 +71,14 @@ class PreferencesRepository @Inject constructor(
                 smsAlertsEnabled = preferences[PreferencesKeys.SMS_ALERTS_ENABLED] ?: true,
                 localAlertsEnabled = preferences[PreferencesKeys.LOCAL_ALERTS_ENABLED] ?: true,
                 criticalLowThreshold = preferences[PreferencesKeys.CRITICAL_LOW_THRESHOLD] ?: 3.0,
-                criticalHighThreshold = preferences[PreferencesKeys.CRITICAL_HIGH_THRESHOLD] ?: 13.9
+                criticalHighThreshold = preferences[PreferencesKeys.CRITICAL_HIGH_THRESHOLD] ?: 13.9,
+                remindersEnabled = preferences[PreferencesKeys.REMINDERS_ENABLED] ?: false,
+                morningReminderEnabled = preferences[PreferencesKeys.MORNING_REMINDER_ENABLED] ?: false,
+                morningReminderHour = preferences[PreferencesKeys.MORNING_REMINDER_HOUR] ?: 8,
+                morningReminderMinute = preferences[PreferencesKeys.MORNING_REMINDER_MINUTE] ?: 0,
+                eveningReminderEnabled = preferences[PreferencesKeys.EVENING_REMINDER_ENABLED] ?: false,
+                eveningReminderHour = preferences[PreferencesKeys.EVENING_REMINDER_HOUR] ?: 20,
+                eveningReminderMinute = preferences[PreferencesKeys.EVENING_REMINDER_MINUTE] ?: 0
             )
         }
 
@@ -158,6 +172,28 @@ class PreferencesRepository @Inject constructor(
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.CRITICAL_LOW_THRESHOLD] = low
             preferences[PreferencesKeys.CRITICAL_HIGH_THRESHOLD] = high
+        }
+    }
+
+    suspend fun updateRemindersEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.REMINDERS_ENABLED] = enabled
+        }
+    }
+
+    suspend fun updateMorningReminder(enabled: Boolean, hour: Int, minute: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.MORNING_REMINDER_ENABLED] = enabled
+            preferences[PreferencesKeys.MORNING_REMINDER_HOUR] = hour
+            preferences[PreferencesKeys.MORNING_REMINDER_MINUTE] = minute
+        }
+    }
+
+    suspend fun updateEveningReminder(enabled: Boolean, hour: Int, minute: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.EVENING_REMINDER_ENABLED] = enabled
+            preferences[PreferencesKeys.EVENING_REMINDER_HOUR] = hour
+            preferences[PreferencesKeys.EVENING_REMINDER_MINUTE] = minute
         }
     }
 }

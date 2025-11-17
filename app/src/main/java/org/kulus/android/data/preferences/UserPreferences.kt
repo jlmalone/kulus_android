@@ -22,7 +22,16 @@ data class UserPreferences(
     // Notification preferences
     val localAlertsEnabled: Boolean = true,
     val criticalLowThreshold: Double = 3.0,    // mmol/L (~54 mg/dL)
-    val criticalHighThreshold: Double = 13.9   // mmol/L (~250 mg/dL)
+    val criticalHighThreshold: Double = 13.9,   // mmol/L (~250 mg/dL)
+
+    // Reminder preferences
+    val remindersEnabled: Boolean = false,
+    val morningReminderEnabled: Boolean = false,
+    val morningReminderHour: Int = 8,    // 8:00 AM
+    val morningReminderMinute: Int = 0,
+    val eveningReminderEnabled: Boolean = false,
+    val eveningReminderHour: Int = 20,   // 8:00 PM
+    val eveningReminderMinute: Int = 0
 )
 
 enum class DeviceType(val displayName: String) {
