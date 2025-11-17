@@ -71,7 +71,7 @@ class ReminderWorker @AssistedInject constructor(
                 .build()
 
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-                "$WORK_NAME\_$hourOfDay\_$minute",
+                "${WORK_NAME}_${hourOfDay}_${minute}",
                 ExistingPeriodicWorkPolicy.REPLACE,
                 reminderRequest
             )
@@ -79,7 +79,7 @@ class ReminderWorker @AssistedInject constructor(
 
         fun cancelReminder(context: Context, hourOfDay: Int, minute: Int) {
             WorkManager.getInstance(context)
-                .cancelUniqueWork("$WORK_NAME\_$hourOfDay\_$minute")
+                .cancelUniqueWork("${WORK_NAME}_${hourOfDay}_${minute}")
         }
 
         fun cancelAllReminders(context: Context) {
