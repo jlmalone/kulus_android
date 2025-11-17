@@ -24,7 +24,9 @@ class AddReadingViewModel @Inject constructor(
         name: String,
         units: GlucoseUnit,
         comment: String?,
-        snackPass: Boolean
+        snackPass: Boolean,
+        photoUri: String? = null,
+        source: String = if (photoUri != null) "photo" else "manual"
     ) {
         viewModelScope.launch {
             _uiState.value = AddReadingUiState.Loading
@@ -34,7 +36,9 @@ class AddReadingViewModel @Inject constructor(
                 name = name,
                 units = units,
                 comment = comment.takeIf { !it.isNullOrBlank() },
-                snackPass = snackPass
+                snackPass = snackPass,
+                photoUri = photoUri,
+                source = source
             )
                 .onSuccess {
                     _uiState.value = AddReadingUiState.Success

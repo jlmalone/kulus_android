@@ -107,7 +107,9 @@ class KulusRepository @Inject constructor(
         name: String,
         units: GlucoseUnit = GlucoseUnit.MMOL_L,
         comment: String? = null,
-        snackPass: Boolean = false
+        snackPass: Boolean = false,
+        photoUri: String? = null,
+        source: String = "android"
     ): Result<GlucoseReading> = withContext(Dispatchers.IO) {
         try {
             // Create local reading first
@@ -118,9 +120,10 @@ class KulusRepository @Inject constructor(
                 name = name,
                 comment = comment,
                 snackPass = snackPass,
-                source = "android",
+                source = source,
                 timestamp = System.currentTimeMillis(),
-                synced = false
+                synced = false,
+                photoUri = photoUri
             )
 
             // Save locally
@@ -137,7 +140,7 @@ class KulusRepository @Inject constructor(
                     units = units.apiValue,
                     comment = comment,
                     snackPass = snackPass,
-                    source = "android"
+                    source = source
                 )
 
                 if (response.isSuccessful) {

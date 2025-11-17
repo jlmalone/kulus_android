@@ -65,13 +65,15 @@ fun KulusApp() {
         composable("add_reading") { backStackEntry ->
             val scannedValue = backStackEntry.savedStateHandle.get<Double>("scannedValue")
             val scannedUnit = backStackEntry.savedStateHandle.get<String>("scannedUnit")
+            val scannedPhotoUri = backStackEntry.savedStateHandle.get<String>("scannedPhotoUri")
 
             AddReadingScreen(
                 onSuccess = { navController.popBackStack() },
                 onBackClick = { navController.popBackStack() },
                 onScanClick = { navController.navigate("camera") },
                 scannedValue = scannedValue,
-                scannedUnit = scannedUnit
+                scannedUnit = scannedUnit,
+                scannedPhotoUri = scannedPhotoUri
             )
         }
 
@@ -85,6 +87,9 @@ fun KulusApp() {
                     navController.previousBackStackEntry
                         ?.savedStateHandle
                         ?.set("scannedUnit", unit)
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("scannedPhotoUri", photoUri)
                     navController.popBackStack()
                 },
                 onManualEntry = {

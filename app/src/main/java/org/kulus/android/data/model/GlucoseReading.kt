@@ -18,7 +18,8 @@ data class GlucoseReading(
     val timestamp: Long = System.currentTimeMillis(),
     val color: String? = null,
     val glucoseLevel: Int? = null,
-    val synced: Boolean = false
+    val synced: Boolean = false,
+    val photoUri: String? = null  // URI of photo associated with reading
 )
 
 data class KulusTimestamp(
@@ -70,7 +71,8 @@ data class KulusReadingDTO(
             timestamp = actualTimestamp?.toDate()?.time ?: System.currentTimeMillis(),
             color = color ?: glucoseLevel?.color,
             glucoseLevel = glucoseLevel?.glucoseLevel?.toInt(),
-            synced = true
+            synced = true,
+            photoUri = null  // Server readings don't have local photos
         )
     }
 }
