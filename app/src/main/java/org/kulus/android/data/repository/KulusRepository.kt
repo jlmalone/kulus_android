@@ -109,7 +109,8 @@ class KulusRepository @Inject constructor(
         comment: String? = null,
         snackPass: Boolean = false,
         photoUri: String? = null,
-        source: String = "android"
+        source: String = "android",
+        tags: List<String> = emptyList()
     ): Result<GlucoseReading> = withContext(Dispatchers.IO) {
         try {
             // Create local reading first
@@ -123,7 +124,8 @@ class KulusRepository @Inject constructor(
                 source = source,
                 timestamp = System.currentTimeMillis(),
                 synced = false,
-                photoUri = photoUri
+                photoUri = photoUri,
+                tags = if (tags.isNotEmpty()) GlucoseReading.tagsToString(tags) else null
             )
 
             // Save locally

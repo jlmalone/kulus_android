@@ -31,7 +31,8 @@ class AddReadingViewModel @Inject constructor(
         comment: String?,
         snackPass: Boolean,
         photoUri: String? = null,
-        source: String = if (photoUri != null) "photo" else "manual"
+        source: String = if (photoUri != null) "photo" else "manual",
+        tags: List<String> = emptyList()
     ) {
         viewModelScope.launch {
             _uiState.value = AddReadingUiState.Loading
@@ -43,7 +44,8 @@ class AddReadingViewModel @Inject constructor(
                 comment = comment.takeIf { !it.isNullOrBlank() },
                 snackPass = snackPass,
                 photoUri = photoUri,
-                source = source
+                source = source,
+                tags = tags
             )
                 .onSuccess { glucoseReading ->
                     // Check if we should notify about critical levels

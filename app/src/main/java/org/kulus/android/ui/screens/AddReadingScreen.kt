@@ -47,6 +47,7 @@ fun AddReadingScreen(
     var snackPass by remember { mutableStateOf(false) }
     var photoUri by remember { mutableStateOf(scannedPhotoUri) }
     var source by remember { mutableStateOf(if (scannedPhotoUri != null) "Photo" else "Manual") }
+    var selectedTags by remember { mutableStateOf(emptyList<String>()) }
 
     val uiState by viewModel.uiState.collectAsState()
 
@@ -280,6 +281,22 @@ fun AddReadingScreen(
                 )
             }
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Tag selector
+            org.kulus.android.ui.components.TagSelector(
+                availableTags = org.kulus.android.data.model.GlucoseTags.PREDEFINED_TAGS,
+                selectedTags = selectedTags,
+                onTagToggle = { tag ->
+                    selectedTags = if (tag in selectedTags) {
+                        selectedTags - tag
+                    } else {
+                        selectedTags + tag
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
             Spacer(modifier = Modifier.weight(1f))
 
             // Validation errors
@@ -314,7 +331,8 @@ fun AddReadingScreen(
                             comment = comment,
                             snackPass = snackPass,
                             photoUri = photoUri,
-                            source = source.lowercase()
+                            source = source.lowercase(),
+                            tags = selectedTags
                         )
                     }
                 },
