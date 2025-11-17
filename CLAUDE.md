@@ -146,7 +146,29 @@ This file provides context for Claude Code agents working on this repository.
   - Integration with AddReadingScreen
   - Tags stored as comma-separated strings in Room
 
-### 🚧 Next Steps for Remote Agents (Phase 4 - Lower Priority)
+### ✅ Phase 4 Features (COMPLETED - November 2025)
+
+#### Tag Filtering - COMPLETE
+- [x] **Filter Readings by Tags**
+  - ReadingsViewModel with tag filtering logic
+  - Combines allReadings with selectedTags for real-time filtering
+  - Extract availableTags from readings (unique, sorted)
+  - TagFilterBar composable with FilterChips
+  - Multi-select tag filtering with OR logic
+  - Clear filters button and active filter display
+  - Dynamic visibility based on tag existence
+
+#### Testing Reminders - COMPLETE (Backend)
+- [x] **Scheduled Reminder Notifications**
+  - ReminderWorker with WorkManager for daily reminders
+  - ReminderService for centralized reminder management
+  - Morning and evening reminder support
+  - Configurable reminder times (default 8:00 AM, 8:00 PM)
+  - UserPreferences extended with reminder settings
+  - PreferencesRepository methods for reminder config
+  - Background scheduling with battery optimization
+
+### 🚧 Next Steps for Remote Agents (Phase 5 - Lower Priority)
 
 #### Advanced Features
 1. **Profile Management**
@@ -154,10 +176,10 @@ This file provides context for Claude Code agents working on this repository.
    - Profile switcher
    - Family sharing
 
-2. **Tag Filtering**
-   - Filter readings by tags in ReadingsListScreen
-   - Tag analytics in TrendsScreen
+2. **Tag Analytics**
+   - Tag-based analytics in TrendsScreen
    - Tag management UI in Settings
+   - Custom tag creation
 
 #### Bluetooth Integration
 1. **Contour Next One Integration** (`service/BluetoothService.kt`)
@@ -168,10 +190,10 @@ This file provides context for Claude Code agents working on this repository.
    - Background reconnection
 
 #### Additional Polish
-1. **Testing Reminders**
-   - Scheduled local notifications
-   - Customizable reminder times
-   - Do Not Disturb integration
+1. **Reminder Settings UI**
+   - Settings screen UI for configuring reminders
+   - Time pickers for morning and evening times
+   - Master reminder toggle
 
 2. **Accessibility Enhancements**
    - Elder mode with larger typography
@@ -407,6 +429,6 @@ git push origin feature/readings-list-screen
 ---
 
 **Created**: November 2025
-**Last Updated**: November 2025 (Phase 3 Complete)
-**Status**: Phases 1, 2 & 3 complete - Core features, high-value features, and onboarding/notifications/tags
+**Last Updated**: November 2025 (Phase 4 Complete)
+**Status**: Phases 1-4 complete - Core features, high-value features, onboarding/notifications/tags, and tag filtering/reminders
 **GitHub**: https://github.com/jlmalone/kulus_android
