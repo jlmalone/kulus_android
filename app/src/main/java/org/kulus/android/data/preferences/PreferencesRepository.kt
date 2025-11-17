@@ -27,6 +27,10 @@ class PreferencesRepository @Inject constructor(
         val OPENAI_API_KEY = stringPreferencesKey("openai_api_key")
         val TARGET_RANGE_LOW = doublePreferencesKey("target_range_low")
         val TARGET_RANGE_HIGH = doublePreferencesKey("target_range_high")
+        val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
+        val PHONE_NUMBER = stringPreferencesKey("phone_number")
+        val SELECTED_DEVICE_TYPE = intPreferencesKey("selected_device_type")
+        val SMS_ALERTS_ENABLED = booleanPreferencesKey("sms_alerts_enabled")
     }
 
     val userPreferencesFlow: Flow<UserPreferences> = context.dataStore.data
@@ -48,7 +52,13 @@ class PreferencesRepository @Inject constructor(
                 ),
                 openAiApiKey = preferences[PreferencesKeys.OPENAI_API_KEY],
                 targetRangeLow = preferences[PreferencesKeys.TARGET_RANGE_LOW] ?: 3.9,
-                targetRangeHigh = preferences[PreferencesKeys.TARGET_RANGE_HIGH] ?: 7.8
+                targetRangeHigh = preferences[PreferencesKeys.TARGET_RANGE_HIGH] ?: 7.8,
+                onboardingCompleted = preferences[PreferencesKeys.ONBOARDING_COMPLETED] ?: false,
+                phoneNumber = preferences[PreferencesKeys.PHONE_NUMBER],
+                selectedDeviceType = DeviceType.fromOrdinal(
+                    preferences[PreferencesKeys.SELECTED_DEVICE_TYPE] ?: 0
+                ),
+                smsAlertsEnabled = preferences[PreferencesKeys.SMS_ALERTS_ENABLED] ?: true
             )
         }
 
@@ -90,6 +100,45 @@ class PreferencesRepository @Inject constructor(
     suspend fun clearAllPreferences() {
         context.dataStore.edit { preferences ->
             preferences.clear()
+        }
+    }
+
+    suspend fun completeOnboarding(
+        name: String,
+        phoneNumber: String?,
+        deviceType: DeviceType,
+        smsAlertsEnabled: Boolean
+    ) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.ONBOARDING_COMPLETED] = true
+            preferences[PreferencesKeys.DEFAULT_NAME] = name
+            if (!phoneNumber.isNullOrBlank()) {
+                preferences[PreferencesKeys.PHONE_NUMBER] = phoneNumber
+            }
+            preferences[PreferencesKeys.SELECTED_DEVICE_TYPE] = deviceType.ordinal
+            preferences[PreferencesKeys.SMS_ALERTS_ENABLED] = smsAlertsEnabled
+        }
+    }
+
+    suspend fun updatePhoneNumber(phoneNumber: String?) {
+        context.dataStore.edit { preferences ->
+            if (phoneNumber.isNullOrBlank()) {
+                preferences.remove(PreferencesKeys.PHONE_NUMBER)
+            } else {
+                preferences[PreferencesKeys.PHONE_NUMBER] = phoneNumber
+            }
+        }
+    }
+
+    suspend fun updateDeviceType(deviceType: DeviceType) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.SELECTED_DEVICE_TYPE] = deviceType.ordinal
+        }
+    }
+
+    suspend fun updateSmsAlertsEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.SMS_ALERTS_ENABLED] = enabled
         }
     }
 }

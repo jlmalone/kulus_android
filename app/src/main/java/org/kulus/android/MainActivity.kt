@@ -7,7 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -15,14 +15,21 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
+import org.kulus.android.data.preferences.PreferencesRepository
 import org.kulus.android.ui.screens.AddReadingScreen
 import org.kulus.android.ui.screens.CameraScreen
 import org.kulus.android.ui.screens.DashboardScreen
 import org.kulus.android.ui.screens.ReadingDetailScreen
+import org.kulus.android.ui.screens.onboarding.OnboardingNav
 import org.kulus.android.ui.theme.KulusTheme
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var preferencesRepository: PreferencesRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -32,7 +39,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    KulusApp()
+                    KulusApp(preferencesRepository)
                 }
             }
         }
@@ -40,7 +47,30 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun KulusApp() {
+fun KulusApp(preferencesRepository: PreferencesRepository) {
+    val userPreferences by preferencesRepository.userPreferencesFlow.collectAsState(
+        initial = org.kulus.android.data.preferences.UserPreferences()
+    )
+    var showOnboarding by remember { mutableStateOf(false) }
+
+    // Determine initial state based on onboarding completion
+    LaunchedEffect(userPreferences.onboardingCompleted) {
+        showOnboarding = !userPreferences.onboardingCompleted
+    }
+
+    if (showOnboarding) {
+        OnboardingNav(
+            onOnboardingComplete = {
+                showOnboarding = false
+            }
+        )
+    } else {
+        MainApp()
+    }
+}
+
+@Composable
+fun MainApp() {
     val navController = rememberNavController()
 
     NavHost(

@@ -11,8 +11,25 @@ data class UserPreferences(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val openAiApiKey: String? = null,
     val targetRangeLow: Double = 3.9,  // mmol/L
-    val targetRangeHigh: Double = 7.8  // mmol/L
+    val targetRangeHigh: Double = 7.8,  // mmol/L
+
+    // Onboarding data
+    val onboardingCompleted: Boolean = false,
+    val phoneNumber: String? = null,
+    val selectedDeviceType: DeviceType = DeviceType.CONTOUR_NEXT_ONE,
+    val smsAlertsEnabled: Boolean = true
 )
+
+enum class DeviceType(val displayName: String) {
+    CONTOUR_NEXT_ONE("Contour Next One (Recommended)"),
+    OTHER("Other Meter");
+
+    companion object {
+        fun fromOrdinal(ordinal: Int): DeviceType {
+            return values().getOrNull(ordinal) ?: CONTOUR_NEXT_ONE
+        }
+    }
+}
 
 enum class ThemeMode(val displayName: String) {
     SYSTEM("System Default"),
