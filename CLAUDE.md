@@ -71,31 +71,45 @@ This file provides context for Claude Code agents working on this repository.
 - [x] Screen routes: dashboard, add_reading, reading_detail
 - [x] Proper back stack management
 
-### 🚧 Next Steps for Remote Agents (Phase 2)
+#### High-Value Features (Phase 2 - COMPLETED)
+- [x] **Photo OCR Reading** - Complete camera and OCR functionality
+  - CameraX integration for photo capture
+  - ML Kit Text Recognition with 3 extraction strategies
+  - Automatic glucose value extraction (explicit unit, labeled, standalone)
+  - Unit detection (mg/dL vs mmol/L)
+  - Confidence scoring and validation
+  - Photo URI storage in GlucoseReading entity
+- [x] **Charts & Analytics** - Full TrendsScreen implementation
+  - Vico line chart showing glucose over time
+  - Time range selector (24h, 7d, 30d, 90d, 1y) with FilterChips
+  - Statistics cards (avg, min, max, std dev, CV, A1C)
+  - Time in range analysis with color-coded progress bars
+  - GlucoseStatistics calculator with comprehensive metrics
+- [x] **Enhanced Add Reading Form** - Photo integration and validation
+  - Photo preview with Coil image loading
+  - Remove photo functionality
+  - Source selector UI (Manual/Photo) with auto-detection
+  - Comprehensive validation (number format, value ranges, unusual values)
+  - Better error messages with specific guidance
+  - Database schema v2 with photoUri field and migration
+- [x] **Sync UI Indicators** - Visual sync status and feedback
+  - Last sync timestamp with relative time (just now, Xm ago, Xh ago)
+  - Unsynced readings count display
+  - SyncStatusBar with visual distinction for pending syncs
+  - Manual sync button
+  - Success/error snackbar notifications
+  - Pull-to-refresh improvements
+- [x] **Data Export** - Multiple export formats with sharing
+  - CSV export with proper escaping and headers
+  - JSON export with structured metadata
+  - Text report export with statistics and time in range
+  - Android share intent integration
+  - Auto-cleanup of old exports (keep last 5)
+  - Export UI in Settings Data Management section
 
-#### Priority 1: High-Value Features
-1. **Photo OCR Reading** (`ui/screens/CameraScreen.kt`, `service/OCRService.kt`)
-   - CameraX integration for photo capture
-   - ML Kit Text Recognition for OCR
-   - Glucose value extraction from text
-   - Unit detection (mg/dL vs mmol/L)
-   - Confidence scoring
-   - Photo storage with readings
+### 🚧 Next Steps for Remote Agents (Phase 3 - Medium Priority)
 
-2. **Charts & Analytics** (`ui/screens/TrendsScreen.kt` - full implementation)
-   - Line chart showing glucose over time (using Vico library)
-   - Time range selector (24h, 7d, 30d, 90d, 1y)
-   - Statistics cards (avg, min, max, std dev)
-   - Time in range calculation
-   - A1C estimate
-
-3. **Enhanced Add Reading Form**
-   - Photo capture button
-   - Photo preview
-   - Source selector (Manual/Photo/Bluetooth)
-   - Better validation
-
-#### Priority 2: Onboarding & Polish
+#### Priority 1: Onboarding & Polish
 1. **Onboarding Flow**
    - Welcome screen
    - Phone number entry
@@ -361,6 +375,6 @@ git push origin feature/readings-list-screen
 ---
 
 **Created**: November 2025
-**Last Updated**: November 2025
-**Status**: Core architecture complete, ready for UI development
+**Last Updated**: November 2025 (Phase 2 Complete)
+**Status**: Phase 1 & 2 complete - Full feature parity with iOS for core & high-value features
 **GitHub**: https://github.com/jlmalone/kulus_android
