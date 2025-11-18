@@ -17,8 +17,9 @@ class ReadingsViewModel @Inject constructor(
     private val _selectedTags = MutableStateFlow<Set<String>>(emptySet())
     val selectedTags: StateFlow<Set<String>> = _selectedTags.asStateFlow()
 
+    // CRITICAL: Use getCurrentUserReadings() to prevent showing other users' data
     private val allReadings: StateFlow<List<GlucoseReading>> = repository
-        .getAllReadingsLocal()
+        .getCurrentUserReadings()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),

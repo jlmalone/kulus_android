@@ -3,6 +3,7 @@ package org.kulus.android.data.repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.withContext
 import org.kulus.android.BuildConfig
 import org.kulus.android.data.api.KulusApiService
@@ -36,6 +37,21 @@ class KulusRepository @Inject constructor(
 
     fun getReadingsByName(name: String): Flow<List<GlucoseReading>> {
         return glucoseReadingDao.getReadingsByName(name)
+    }
+
+    /**
+     * Get readings for the current user only.
+     * This implements client-side data segregation matching iOS behavior.
+     * CRITICAL: Always use this method instead of getAllReadingsLocal() to prevent
+     * users from seeing each other's glucose data.
+     */
+    fun getCurrentUserReadings(): Flow<List<GlucoseReading>> {
+        return preferencesRepository.userPreferencesFlow
+            .flatMapLatest { userPrefs ->
+                val userName = userPrefs.defaultName
+                android.util.Log.d("KulusRepository", "🔒 [LOCAL] Filtering readings for user: $userName")
+                glucoseReadingDao.getReadingsByName(userName)
+            }
     }
 
     suspend fun getReadingById(id: String): GlucoseReading? {

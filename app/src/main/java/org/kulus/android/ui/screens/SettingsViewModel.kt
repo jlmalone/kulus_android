@@ -152,8 +152,8 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             _actionState.value = ActionState.Loading("Preparing export...")
             try {
-                // Get all readings
-                val readings = kulusRepository.getAllReadingsLocal().first()
+                // Get current user's readings only (data segregation)
+                val readings = kulusRepository.getCurrentUserReadings().first()
 
                 if (readings.isEmpty()) {
                     _actionState.value = ActionState.Error("No readings to export")
