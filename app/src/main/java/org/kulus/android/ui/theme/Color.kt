@@ -16,4 +16,4 @@ val MatrixTextSecondary = Color(0x99B8FFE6)
 val GlucoseGreen = Color(0xFF00D68F)  // Normal range
 val GlucoseOrange = Color(0xFFFF9500)  // Caution
 val GlucoseRed = Color(0xFFFF3B30)  // Dangerous
-val GlucosePurple = Color(0xFFAF52DE)  // Critical
+val GlucoseCrimson = Color(0xFFDC143C)  // Critical (dark red)

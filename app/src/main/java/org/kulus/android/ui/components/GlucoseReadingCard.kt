@@ -132,7 +132,7 @@ private fun getLevelColor(color: String?): Color {
         "green" -> GlucoseGreen
         "orange" -> GlucoseOrange
         "red" -> GlucoseRed
-        "purple" -> GlucosePurple
+        "purple" -> GlucoseCrimson
         else -> Color.Gray
     }
 }

@@ -8,10 +8,16 @@ import androidx.compose.ui.graphics.Color
 private val KulusColorScheme = darkColorScheme(
     primary = MatrixNeon,
     onPrimary = MatrixBackground,
+    primaryContainer = MatrixPanelEnd,  // Dark green panel, NO PURPLE
+    onPrimaryContainer = MatrixNeon,
     secondary = MatrixAmber,
     onSecondary = MatrixBackground,
+    secondaryContainer = MatrixPanelEnd,  // Consistent with primary
+    onSecondaryContainer = MatrixAmber,
     tertiary = MatrixNeonDim,
     onTertiary = MatrixBackground,
+    tertiaryContainer = MatrixPanelEnd,  // Consistent
+    onTertiaryContainer = MatrixNeonDim,
     background = MatrixBackground,
     onBackground = MatrixTextPrimary,
     surface = MatrixPanelStart,
@@ -23,8 +29,11 @@ private val KulusColorScheme = darkColorScheme(
     scrim = Color.Black.copy(alpha = 0.8f),
     inverseOnSurface = MatrixBackground,
     inverseSurface = MatrixTextPrimary,
+    inversePrimary = MatrixNeon.copy(alpha = 0.7f),  // No default purple
     error = GlucoseRed,
-    onError = Color.White
+    onError = Color.White,
+    errorContainer = GlucoseRed.copy(alpha = 0.2f),
+    onErrorContainer = GlucoseRed
 )
 
 @Composable

@@ -2,6 +2,22 @@
 
 This file provides context for Claude Code agents working on this repository.
 
+## 🚀 First-Time Setup for AI Agents
+
+**IMPORTANT**: Before doing anything else, check if setup is complete:
+
+```bash
+test -f .setup_complete && cat .setup_complete
+```
+
+If the file doesn't exist, run the idempotent setup script:
+
+```bash
+./setup.sh
+```
+
+This script is **safe to run multiple times**. If already set up, it will just report the current configuration. See `SETUP.md` for details.
+
 ## Project Overview
 
 **Kulus Android** is a glucose monitoring mobile application that integrates with the Kulus Firebase backend (https://kulus.org). It features a Matrix-inspired neon theme borrowed from the REDO Android project.
