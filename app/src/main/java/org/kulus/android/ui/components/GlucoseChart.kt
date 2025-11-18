@@ -105,38 +105,28 @@ fun GlucoseChart(
 
     Column(modifier = modifier) {
         ProvideChartStyle {
-            Chart(
-                chart = lineChart(
-                    lines = listOf(
-                        lineSpec(
-                            lineColor = primaryColor,
-                            lineBackgroundShader = null,
-                            point = null  // No points, just line
-                        )
+            chartEntryModel?.let { model ->
+                Chart(
+                    chart = lineChart(
+                        lines = listOf(
+                            lineSpec()
+                        ),
+                        targetVerticalAxisPosition = AxisPosition.Vertical.Start
                     ),
-                    targetVerticalAxisPosition = AxisPosition.Vertical.Start
-                ),
-                model = chartEntryModel!!,
-                startAxis = rememberStartAxis(
-                    valueFormatter = valueFormatter,
-                    label = textComponent(
-                        color = onSurfaceColor,
-                        textSize = 12.sp
+                    model = model,
+                    startAxis = rememberStartAxis(
+                        valueFormatter = valueFormatter,
+                        guideline = null
                     ),
-                    guideline = null
-                ),
-                bottomAxis = rememberBottomAxis(
-                    valueFormatter = dateFormatter,
-                    label = textComponent(
-                        color = onSurfaceColor,
-                        textSize = 10.sp
+                    bottomAxis = rememberBottomAxis(
+                        valueFormatter = dateFormatter,
+                        guideline = null
                     ),
-                    guideline = null
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(250.dp)
-            )
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(250.dp)
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
