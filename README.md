@@ -4,7 +4,15 @@ Glucose monitoring mobile app with Matrix-themed UI.
 
 ## Quick Start - Just Hit Play! ▶️
 
-The project is now configured to build correctly in Android Studio:
+### First Time Setup
+
+```bash
+./setup.sh
+```
+
+This idempotent script will configure everything automatically. Safe to run multiple times.
+
+### After Setup
 
 1. **Open in Android Studio** - The IDE is configured to use JDK 17 automatically
 2. **Hit the Play button** ▶️ - It should just work!
