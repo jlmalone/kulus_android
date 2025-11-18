@@ -26,8 +26,9 @@ class TrendsViewModel @Inject constructor(
 
     private val _selectedTimeRange = MutableStateFlow(TimeRange.DAYS_7)
 
+    // CRITICAL: Use getCurrentUserReadings() to prevent showing other users' data
     val uiState: StateFlow<TrendsUiState> = combine(
-        repository.getAllReadingsLocal(),
+        repository.getCurrentUserReadings(),
         _selectedTimeRange
     ) { readings, timeRange ->
         val filteredReadings = readings

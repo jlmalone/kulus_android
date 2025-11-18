@@ -107,7 +107,7 @@ fun DashboardScreen(
             }
 
             DashboardTab.TRENDS -> {
-                TrendsScreen(modifier = Modifier.padding(paddingValues))
+                TrendsScreen(Modifier.padding(paddingValues))
             }
 
             DashboardTab.SETTINGS -> {

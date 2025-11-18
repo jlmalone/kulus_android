@@ -284,6 +284,48 @@ private fun SettingsContent(
 
         Divider(modifier = Modifier.padding(horizontal = 16.dp))
 
+        // Notifications Section
+        SettingsSectionHeader("Notifications")
+
+        SettingsToggleOption(
+            title = "Local Alerts",
+            subtitle = if (preferences.localAlertsEnabled)
+                "Show notifications for critical glucose levels"
+            else
+                "Critical glucose notifications disabled",
+            icon = Icons.Default.Notifications,
+            checked = preferences.localAlertsEnabled,
+            onCheckedChange = { viewModel.updateLocalAlertsEnabled(it) }
+        )
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant
+            )
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "About Notifications",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "• Alerts appear for critically high (>13.9 mmol/L) or low (<3.0 mmol/L) readings\n" +
+                            "• \"Snack Pass\" readings won't trigger alerts\n" +
+                            "• Separate from SMS alerts managed by Kulus backend\n" +
+                            "• Reminder notifications coming in future updates",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
+        Divider(modifier = Modifier.padding(horizontal = 16.dp))
+
         // Appearance Section
         SettingsSectionHeader("Appearance")
 
@@ -562,6 +604,46 @@ private fun SettingsInfoOption(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+    }
+}
+
+@Composable
+private fun SettingsToggleOption(
+    title: String,
+    subtitle: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium
+            )
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange
+        )
     }
 }
 

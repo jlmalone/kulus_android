@@ -3,12 +3,14 @@ package org.kulus.android.data.repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.withContext
 import org.kulus.android.BuildConfig
 import org.kulus.android.data.api.KulusApiService
 import org.kulus.android.data.local.GlucoseReadingDao
 import org.kulus.android.data.local.TokenStore
 import org.kulus.android.data.model.*
+import org.kulus.android.data.preferences.PreferencesRepository
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
@@ -20,7 +22,8 @@ import javax.inject.Singleton
 class KulusRepository @Inject constructor(
     private val apiService: KulusApiService,
     private val glucoseReadingDao: GlucoseReadingDao,
-    private val tokenStore: TokenStore
+    private val tokenStore: TokenStore,
+    private val preferencesRepository: PreferencesRepository
 ) {
 
     private val numberFormatter = DecimalFormat("0.#", DecimalFormatSymbols(Locale.US)).apply {
@@ -34,6 +37,21 @@ class KulusRepository @Inject constructor(
 
     fun getReadingsByName(name: String): Flow<List<GlucoseReading>> {
         return glucoseReadingDao.getReadingsByName(name)
+    }
+
+    /**
+     * Get readings for the current user only.
+     * This implements client-side data segregation matching iOS behavior.
+     * CRITICAL: Always use this method instead of getAllReadingsLocal() to prevent
+     * users from seeing each other's glucose data.
+     */
+    fun getCurrentUserReadings(): Flow<List<GlucoseReading>> {
+        return preferencesRepository.userPreferencesFlow
+            .flatMapLatest { userPrefs ->
+                val userName = userPrefs.defaultName
+                android.util.Log.d("KulusRepository", "🔒 [LOCAL] Filtering readings for user: $userName")
+                glucoseReadingDao.getReadingsByName(userName)
+            }
     }
 
     suspend fun getReadingById(id: String): GlucoseReading? {
@@ -75,20 +93,31 @@ class KulusRepository @Inject constructor(
     }
 
     // Remote data operations
+    // CRITICAL PRIVACY FIX: Only sync readings for current user
     suspend fun syncReadingsFromServer(): Result<List<GlucoseReading>> = withContext(Dispatchers.IO) {
         try {
             ensureAuthenticated().getOrThrow()
 
-            val response = apiService.getAllReadings()
+            // Get current user's name from preferences
+            val userPrefs = preferencesRepository.userPreferencesFlow.first()
+            val userName = userPrefs.defaultName
+
+            android.util.Log.d("KulusRepository", "🔒 [SYNC] Fetching readings for user: $userName")
+
+            // Use filtered endpoint instead of getAllReadings
+            val response = apiService.getReadingsByName(name = userName)
             if (response.isSuccessful) {
                 val readingsResponse = response.body()
                 val readings = readingsResponse?.readings?.mapNotNull { dto ->
                     try {
                         dto.toGlucoseReading()
                     } catch (e: Exception) {
+                        android.util.Log.w("KulusRepository", "Failed to parse reading: ${e.message}")
                         null // Skip invalid readings
                     }
                 } ?: emptyList()
+
+                android.util.Log.d("KulusRepository", "✅ [SYNC] Fetched ${readings.size} readings from Kulus for $userName")
 
                 // Save to local database
                 glucoseReadingDao.insertReadings(readings)
@@ -98,6 +127,7 @@ class KulusRepository @Inject constructor(
                 Result.failure(Exception("HTTP ${response.code()}: ${response.message()}"))
             }
         } catch (e: Exception) {
+            android.util.Log.e("KulusRepository", "❌ [SYNC] Sync failed: ${e.message}", e)
             Result.failure(e)
         }
     }
@@ -109,7 +139,8 @@ class KulusRepository @Inject constructor(
         comment: String? = null,
         snackPass: Boolean = false,
         photoUri: String? = null,
-        source: String = "android"
+        source: String = "android",
+        tags: List<String> = emptyList()
     ): Result<GlucoseReading> = withContext(Dispatchers.IO) {
         try {
             // Create local reading first
@@ -123,7 +154,8 @@ class KulusRepository @Inject constructor(
                 source = source,
                 timestamp = System.currentTimeMillis(),
                 synced = false,
-                photoUri = photoUri
+                photoUri = photoUri,
+                tags = if (tags.isNotEmpty()) GlucoseReading.tagsToString(tags) else null
             )
 
             // Save locally

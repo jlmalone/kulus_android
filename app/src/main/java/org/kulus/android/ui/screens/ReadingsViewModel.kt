@@ -14,13 +14,46 @@ class ReadingsViewModel @Inject constructor(
     private val repository: KulusRepository
 ) : ViewModel() {
 
-    val readings: StateFlow<List<GlucoseReading>> = repository
-        .getAllReadingsLocal()
+    private val _selectedTags = MutableStateFlow<Set<String>>(emptySet())
+    val selectedTags: StateFlow<Set<String>> = _selectedTags.asStateFlow()
+
+    // CRITICAL: Use getCurrentUserReadings() to prevent showing other users' data
+    private val allReadings: StateFlow<List<GlucoseReading>> = repository
+        .getCurrentUserReadings()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
+
+    val readings: StateFlow<List<GlucoseReading>> = combine(
+        allReadings,
+        _selectedTags
+    ) { readings, selectedTags ->
+        if (selectedTags.isEmpty()) {
+            readings
+        } else {
+            readings.filter { reading ->
+                val readingTags = reading.getTagsList()
+                selectedTags.any { tag -> readingTags.contains(tag) }
+            }
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
+    // Get all unique tags from all readings
+    val availableTags: StateFlow<List<String>> = allReadings.map { readings ->
+        readings.flatMap { it.getTagsList() }
+            .distinct()
+            .sorted()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
@@ -58,5 +91,17 @@ class ReadingsViewModel @Inject constructor(
 
     fun clearSuccessMessage() {
         _syncSuccessMessage.value = null
+    }
+
+    fun toggleTagFilter(tag: String) {
+        _selectedTags.value = if (tag in _selectedTags.value) {
+            _selectedTags.value - tag
+        } else {
+            _selectedTags.value + tag
+        }
+    }
+
+    fun clearTagFilters() {
+        _selectedTags.value = emptySet()
     }
 }

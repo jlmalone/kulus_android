@@ -22,8 +22,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodayScreen(
+    modifier: Modifier = Modifier,
     viewModel: ReadingsViewModel = hiltViewModel(),
     onAddClick: () -> Unit = {},
     onReadingClick: (String) -> Unit = {}
@@ -35,7 +37,7 @@ fun TodayScreen(
     val recentReadings = readings.take(5)
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
@@ -119,6 +121,7 @@ fun TodayScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LatestReadingCard(
     reading: GlucoseReading,
@@ -223,6 +226,7 @@ private fun LatestReadingCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EmptyLatestReadingCard(onAddClick: () -> Unit) {
     Card(

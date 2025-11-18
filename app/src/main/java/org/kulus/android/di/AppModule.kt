@@ -34,7 +34,10 @@ object AppModule {
             KulusDatabase::class.java,
             "kulus_database"
         )
-            .addMigrations(KulusDatabase.MIGRATION_1_2)
+            .addMigrations(
+                KulusDatabase.MIGRATION_1_2,
+                KulusDatabase.MIGRATION_2_3
+            )
             .fallbackToDestructiveMigration()
             .build()
     }

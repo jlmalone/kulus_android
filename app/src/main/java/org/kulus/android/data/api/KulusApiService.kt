@@ -15,6 +15,12 @@ interface KulusApiService {
     @GET("/api/v2/getAllReadings")
     suspend fun getAllReadings(): Response<KulusReadingsResponse>
 
+    @GET("/reportingApiV2")
+    suspend fun getReadingsByName(
+        @Query("action") action: String = "readings",
+        @Query("name") name: String
+    ): Response<KulusReadingsResponse>
+
     @GET("/api/v2/addReadingFromUrl")
     suspend fun addReading(
         @Query("name") name: String,

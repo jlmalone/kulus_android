@@ -11,8 +11,39 @@ data class UserPreferences(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val openAiApiKey: String? = null,
     val targetRangeLow: Double = 3.9,  // mmol/L
-    val targetRangeHigh: Double = 7.8  // mmol/L
+    val targetRangeHigh: Double = 7.8,  // mmol/L
+
+    // Onboarding data
+    val onboardingCompleted: Boolean = false,
+    val phoneNumber: String? = null,
+    val selectedDeviceType: DeviceType = DeviceType.CONTOUR_NEXT_ONE,
+    val smsAlertsEnabled: Boolean = true,
+
+    // Notification preferences
+    val localAlertsEnabled: Boolean = true,
+    val criticalLowThreshold: Double = 3.0,    // mmol/L (~54 mg/dL)
+    val criticalHighThreshold: Double = 13.9,   // mmol/L (~250 mg/dL)
+
+    // Reminder preferences
+    val remindersEnabled: Boolean = false,
+    val morningReminderEnabled: Boolean = false,
+    val morningReminderHour: Int = 8,    // 8:00 AM
+    val morningReminderMinute: Int = 0,
+    val eveningReminderEnabled: Boolean = false,
+    val eveningReminderHour: Int = 20,   // 8:00 PM
+    val eveningReminderMinute: Int = 0
 )
+
+enum class DeviceType(val displayName: String) {
+    CONTOUR_NEXT_ONE("Contour Next One (Recommended)"),
+    OTHER("Other Meter");
+
+    companion object {
+        fun fromOrdinal(ordinal: Int): DeviceType {
+            return values().getOrNull(ordinal) ?: CONTOUR_NEXT_ONE
+        }
+    }
+}
 
 enum class ThemeMode(val displayName: String) {
     SYSTEM("System Default"),

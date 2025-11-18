@@ -38,6 +38,9 @@ class SettingsViewModel @Inject constructor(
     private val _actionState = MutableStateFlow<ActionState>(ActionState.Idle)
     val actionState: StateFlow<ActionState> = _actionState.asStateFlow()
 
+    // Expose user preferences for direct access (e.g., for setup dialog)
+    val userPreferences = preferencesRepository.userPreferencesFlow
+
     init {
         loadPreferences()
     }
@@ -97,6 +100,16 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun updateLocalAlertsEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            try {
+                preferencesRepository.updateLocalAlertsEnabled(enabled)
+            } catch (e: Exception) {
+                _actionState.value = ActionState.Error("Failed to update alerts: ${e.message}")
+            }
+        }
+    }
+
     fun clearLocalData() {
         viewModelScope.launch {
             _actionState.value = ActionState.Loading("Clearing data...")
@@ -139,8 +152,8 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             _actionState.value = ActionState.Loading("Preparing export...")
             try {
-                // Get all readings
-                val readings = kulusRepository.getAllReadingsLocal().first()
+                // Get current user's readings only (data segregation)
+                val readings = kulusRepository.getCurrentUserReadings().first()
 
                 if (readings.isEmpty()) {
                     _actionState.value = ActionState.Error("No readings to export")
