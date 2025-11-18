@@ -8,15 +8,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
 import com.patrykandpatrick.vico.compose.chart.line.lineChart
-import com.patrykandpatrick.vico.compose.chart.line.lineSpec
+import com.patrykandpatrick.vico.compose.component.rememberTextComponent
 import com.patrykandpatrick.vico.compose.component.shapeComponent
-import com.patrykandpatrick.vico.compose.component.textComponent
 import com.patrykandpatrick.vico.compose.dimensions.dimensionsOf
 import com.patrykandpatrick.vico.compose.style.ProvideChartStyle
 import com.patrykandpatrick.vico.core.axis.AxisPosition
@@ -108,10 +108,9 @@ fun GlucoseChart(
             Chart(
                 chart = lineChart(
                     lines = listOf(
-                        lineSpec(
-                            lineColor = primaryColor,
-                            lineBackgroundShader = null,
-                            point = null  // No points, just line
+                        LineChart.LineSpec(
+                            lineColor = primaryColor.toArgb(),
+                            lineBackgroundShader = null
                         )
                     ),
                     targetVerticalAxisPosition = AxisPosition.Vertical.Start
@@ -119,17 +118,15 @@ fun GlucoseChart(
                 model = chartEntryModel!!,
                 startAxis = rememberStartAxis(
                     valueFormatter = valueFormatter,
-                    label = textComponent(
-                        color = onSurfaceColor,
-                        textSize = 12.sp
+                    label = rememberTextComponent(
+                        color = onSurfaceColor
                     ),
                     guideline = null
                 ),
                 bottomAxis = rememberBottomAxis(
                     valueFormatter = dateFormatter,
-                    label = textComponent(
-                        color = onSurfaceColor,
-                        textSize = 10.sp
+                    label = rememberTextComponent(
+                        color = onSurfaceColor
                     ),
                     guideline = null
                 ),
