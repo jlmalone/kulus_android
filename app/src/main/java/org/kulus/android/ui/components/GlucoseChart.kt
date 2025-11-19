@@ -55,7 +55,7 @@ fun GlucoseChart(
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface
 
     // Convert readings to chart entries
-    val chartEntryModelProducer = remember(readings) {
+    val chartEntryModel = remember(readings) {
         val entries = readings.mapIndexed { index, reading ->
             val value = when (reading.units) {
                 "mg/dL" -> reading.reading / 18.0 // Convert to mmol/L for display
@@ -66,7 +66,7 @@ fun GlucoseChart(
                 y = value.toFloat()
             )
         }
-        ChartEntryModelProducer(entries)
+        ChartEntryModelProducer(entries).getModel()
     }
 
     // Date formatter for x-axis
@@ -109,13 +109,14 @@ fun GlucoseChart(
                 chart = lineChart(
                     lines = listOf(
                         lineSpec(
-                            lineColor = primaryColor.hashCode(),
-                            lineBackgroundShader = null
+                            lineColor = primaryColor,
+                            lineBackgroundShader = null,
+                            point = null
                         )
                     ),
                     targetVerticalAxisPosition = AxisPosition.Vertical.Start
                 ),
-                chartModelProducer = chartEntryModelProducer,
+                model = chartEntryModel!!,
                 startAxis = rememberStartAxis(
                     valueFormatter = valueFormatter,
                     guideline = null
