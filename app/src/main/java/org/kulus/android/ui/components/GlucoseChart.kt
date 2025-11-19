@@ -14,6 +14,7 @@ import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
 import com.patrykandpatrick.vico.compose.chart.line.lineChart
+import com.patrykandpatrick.vico.compose.chart.line.lineSpec
 import com.patrykandpatrick.vico.compose.style.ProvideChartStyle
 import com.patrykandpatrick.vico.core.axis.AxisPosition
 import com.patrykandpatrick.vico.core.axis.formatter.AxisValueFormatter
@@ -42,6 +43,54 @@ fun GlucoseChart(
     if (readings.isEmpty()) {
         EmptyChartState(modifier)
         return
+    }
+
+    val primaryColor = MaterialTheme.colorScheme.primary
+
+    // Convert readings to chart entries
+    val chartEntryModel = remember(readings) {
+        val entries = readings.mapIndexed { index, reading ->
+            val value = when (reading.units) {
+                "mg/dL" -> reading.reading / 18.0 // Convert to mmol/L for display
+                else -> reading.reading
+            }
+            FloatEntry(
+                x = index.toFloat(),
+                y = value.toFloat()
+            )
+        }
+        ChartEntryModelProducer(entries).getModel()
+    }
+
+    // Date formatter for x-axis
+    val dateFormatter = remember {
+        AxisValueFormatter<AxisPosition.Horizontal.Bottom> { value, _ ->
+            val index = value.toInt()
+            if (index in readings.indices) {
+                val timestamp = readings[index].timestamp
+                val date = java.util.Date(timestamp)
+                when {
+                    readings.size <= 24 -> {
+                        java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault()).format(date)
+                    }
+                    readings.size <= 90 -> {
+                        java.text.SimpleDateFormat("MMM d", java.util.Locale.getDefault()).format(date)
+                    }
+                    else -> {
+                        java.text.SimpleDateFormat("MMM yy", java.util.Locale.getDefault()).format(date)
+                    }
+                }
+            } else {
+                ""
+            }
+        }
+    }
+
+    // Value formatter for y-axis (mmol/L)
+    val valueFormatter = remember {
+        AxisValueFormatter<AxisPosition.Vertical.Start> { value, _ ->
+            String.format("%.1f", value)
+        }
     }
 
     Column(modifier = modifier) {
