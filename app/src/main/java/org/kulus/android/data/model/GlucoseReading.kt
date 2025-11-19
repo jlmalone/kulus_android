@@ -20,7 +20,8 @@ data class GlucoseReading(
     val glucoseLevel: Int? = null,
     val synced: Boolean = false,
     val photoUri: String? = null,  // URI of photo associated with reading
-    val tags: String? = null  // Comma-separated tags (e.g., "fasting,morning,pre-meal")
+    val tags: String? = null,  // Comma-separated tags (e.g., "fasting,morning,pre-meal")
+    val profileId: String = "00000000-0000-0000-0000-000000000001"  // FK to user_profiles table
 ) {
     fun getTagsList(): List<String> {
         return tags?.split(",")?.map { it.trim() }?.filter { it.isNotEmpty() } ?: emptyList()

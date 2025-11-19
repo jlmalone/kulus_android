@@ -23,8 +23,6 @@ import org.kulus.android.data.model.GlucoseReading
 import org.kulus.android.ui.theme.GlucoseGreen
 import org.kulus.android.ui.theme.GlucoseOrange
 import org.kulus.android.ui.theme.GlucoseRed
-import java.text.SimpleDateFormat
-import java.util.*
 
 /**
  * GlucoseChart - Line chart for displaying glucose trends over time
@@ -44,58 +42,6 @@ fun GlucoseChart(
     if (readings.isEmpty()) {
         EmptyChartState(modifier)
         return
-    }
-
-    val primaryColor = MaterialTheme.colorScheme.primary
-    val onSurfaceColor = MaterialTheme.colorScheme.onSurface
-
-    // Convert readings to chart entries
-    val chartEntryModel = remember(readings) {
-        val entries = readings.mapIndexed { index, reading ->
-            val value = when (reading.units) {
-                "mg/dL" -> reading.reading / 18.0 // Convert to mmol/L for display
-                else -> reading.reading
-            }
-            FloatEntry(
-                x = index.toFloat(),
-                y = value.toFloat()
-            )
-        }
-        ChartEntryModelProducer(entries).getModel()
-    }
-
-    // Date formatter for x-axis
-    val dateFormatter = remember {
-        AxisValueFormatter<AxisPosition.Horizontal.Bottom> { value, _ ->
-            val index = value.toInt()
-            if (index in readings.indices) {
-                val timestamp = readings[index].timestamp
-                val date = Date(timestamp)
-                when {
-                    readings.size <= 24 -> {
-                        // Show hours for 24h view
-                        SimpleDateFormat("HH:mm", Locale.getDefault()).format(date)
-                    }
-                    readings.size <= 90 -> {
-                        // Show dates for week/month view
-                        SimpleDateFormat("MMM d", Locale.getDefault()).format(date)
-                    }
-                    else -> {
-                        // Show month for longer periods
-                        SimpleDateFormat("MMM yy", Locale.getDefault()).format(date)
-                    }
-                }
-            } else {
-                ""
-            }
-        }
-    }
-
-    // Value formatter for y-axis (mmol/L)
-    val valueFormatter = remember {
-        AxisValueFormatter<AxisPosition.Vertical.Start> { value, _ ->
-            String.format("%.1f", value)
-        }
     }
 
     Column(modifier = modifier) {

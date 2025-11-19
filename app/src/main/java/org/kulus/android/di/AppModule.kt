@@ -15,6 +15,7 @@ import org.kulus.android.data.api.KulusApiService
 import org.kulus.android.data.local.GlucoseReadingDao
 import org.kulus.android.data.local.KulusDatabase
 import org.kulus.android.data.local.TokenStore
+import org.kulus.android.data.local.UserProfileDao
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -36,7 +37,8 @@ object AppModule {
         )
             .addMigrations(
                 KulusDatabase.MIGRATION_1_2,
-                KulusDatabase.MIGRATION_2_3
+                KulusDatabase.MIGRATION_2_3,
+                KulusDatabase.MIGRATION_3_4
             )
             .fallbackToDestructiveMigration()
             .build()
@@ -46,6 +48,12 @@ object AppModule {
     @Singleton
     fun provideGlucoseReadingDao(database: KulusDatabase): GlucoseReadingDao {
         return database.glucoseReadingDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserProfileDao(database: KulusDatabase): UserProfileDao {
+        return database.userProfileDao()
     }
 
     @Provides
