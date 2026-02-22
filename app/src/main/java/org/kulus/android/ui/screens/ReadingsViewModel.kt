@@ -6,18 +6,18 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.kulus.android.data.model.GlucoseReading
-import org.kulus.android.data.repository.KulusRepository
+import org.kulus.android.data.repository.KulusV3Repository
 import javax.inject.Inject
 
 @HiltViewModel
 class ReadingsViewModel @Inject constructor(
-    private val repository: KulusRepository
+    private val repository: KulusV3Repository
 ) : ViewModel() {
 
     private val _selectedTags = MutableStateFlow<Set<String>>(emptySet())
     val selectedTags: StateFlow<Set<String>> = _selectedTags.asStateFlow()
 
-    // CRITICAL: Use getCurrentUserReadings() to prevent showing other users' data
+    // V3 API uses phone number for user identification (synced with iOS)
     private val allReadings: StateFlow<List<GlucoseReading>> = repository
         .getCurrentUserReadings()
         .stateIn(

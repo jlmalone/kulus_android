@@ -1,21 +1,24 @@
 package org.kulus.android.ui.screens
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 
 /**
- * DashboardScreen - Main app screen with tab navigation
+ * DashboardScreen - iOS-style main app screen with tab navigation
  *
- * Provides bottom navigation between:
- * - Today: Latest reading and recent readings
- * - History: Full list of all readings
- * - Trends: Charts and analytics (placeholder for Phase 2)
- * - Settings: App preferences and configuration
+ * Matches iOS MainAppView tab structure with:
+ * - Dashboard (Today): Latest reading and recent readings
+ * - Add Reading: Form to add new readings
+ * - History: Full list with filters and stats
+ * - Settings: App preferences
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,26 +30,11 @@ fun DashboardScreen(
     var selectedTab by remember { mutableStateOf(DashboardTab.TODAY) }
 
     Scaffold(
-        topBar = {
-            when (selectedTab) {
-                DashboardTab.TODAY, DashboardTab.HISTORY, DashboardTab.TRENDS -> {
-                    TopAppBar(
-                        title = { Text("Kulus") },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.background,
-                            titleContentColor = MaterialTheme.colorScheme.primary
-                        )
-                    )
-                }
-                DashboardTab.SETTINGS -> {
-                    // Settings screen has its own top bar
-                }
-            }
-        },
         bottomBar = {
             NavigationBar(
                 containerColor = MaterialTheme.colorScheme.surface,
-                contentColor = MaterialTheme.colorScheme.primary
+                contentColor = MaterialTheme.colorScheme.primary,
+                tonalElevation = 8.dp
             ) {
                 DashboardTab.values().forEach { tab ->
                     NavigationBarItem(
@@ -54,7 +42,7 @@ fun DashboardScreen(
                         onClick = { selectedTab = tab },
                         icon = {
                             Icon(
-                                imageVector = tab.icon,
+                                imageVector = if (selectedTab == tab) tab.selectedIcon else tab.icon,
                                 contentDescription = tab.title
                             )
                         },
@@ -75,7 +63,8 @@ fun DashboardScreen(
             if (selectedTab == DashboardTab.TODAY || selectedTab == DashboardTab.HISTORY) {
                 FloatingActionButton(
                     onClick = onAddClick,
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(16.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -121,9 +110,13 @@ fun DashboardScreen(
     }
 }
 
-enum class DashboardTab(val title: String, val icon: ImageVector) {
-    TODAY("Today", Icons.Default.Home),
-    HISTORY("History", Icons.Default.List),
-    TRENDS("Trends", Icons.Default.ShowChart),
-    SETTINGS("Settings", Icons.Default.Settings)
+enum class DashboardTab(
+    val title: String,
+    val icon: ImageVector,
+    val selectedIcon: ImageVector
+) {
+    TODAY("Dashboard", Icons.Outlined.Home, Icons.Filled.Home),
+    HISTORY("History", Icons.Outlined.List, Icons.Filled.List),
+    TRENDS("Trends", Icons.Outlined.ShowChart, Icons.Filled.ShowChart),
+    SETTINGS("Settings", Icons.Outlined.Settings, Icons.Filled.Settings)
 }

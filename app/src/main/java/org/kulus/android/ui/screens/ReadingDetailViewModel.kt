@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.kulus.android.data.model.GlucoseReading
-import org.kulus.android.data.repository.KulusRepository
+import org.kulus.android.data.repository.KulusV3Repository
 import javax.inject.Inject
 
 sealed class ReadingDetailUiState {
@@ -20,7 +20,7 @@ sealed class ReadingDetailUiState {
 
 @HiltViewModel
 class ReadingDetailViewModel @Inject constructor(
-    private val repository: KulusRepository,
+    private val repository: KulusV3Repository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 

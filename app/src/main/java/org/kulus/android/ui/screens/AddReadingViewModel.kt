@@ -9,14 +9,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.kulus.android.data.model.GlucoseUnit
+import org.kulus.android.data.api.v3.GlucoseUnits
 import org.kulus.android.data.preferences.PreferencesRepository
-import org.kulus.android.data.repository.KulusRepository
+import org.kulus.android.data.repository.KulusV3Repository
 import org.kulus.android.service.NotificationService
 import javax.inject.Inject
 
 @HiltViewModel
 class AddReadingViewModel @Inject constructor(
-    private val repository: KulusRepository,
+    private val repository: KulusV3Repository,
     private val preferencesRepository: PreferencesRepository,
     private val notificationService: NotificationService
 ) : ViewModel() {
@@ -29,7 +30,7 @@ class AddReadingViewModel @Inject constructor(
 
     fun addReading(
         reading: Double,
-        name: String,
+        name: String, // Note: v3 uses phone number internally, name is for display only
         units: GlucoseUnit,
         comment: String?,
         snackPass: Boolean,
@@ -40,10 +41,15 @@ class AddReadingViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = AddReadingUiState.Loading
 
+            // Convert GlucoseUnit to GlucoseUnits (v3)
+            val v3Units = when (units) {
+                GlucoseUnit.MMOL_L -> GlucoseUnits.MMOL_L
+                GlucoseUnit.MG_DL -> GlucoseUnits.MG_DL
+            }
+
             repository.addReading(
                 reading = reading,
-                name = name,
-                units = units,
+                units = v3Units,
                 comment = comment.takeIf { !it.isNullOrBlank() },
                 snackPass = snackPass,
                 photoUri = photoUri,

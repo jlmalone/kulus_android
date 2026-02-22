@@ -12,7 +12,7 @@ import org.kulus.android.data.model.GlucoseUnit
 import org.kulus.android.data.preferences.PreferencesRepository
 import org.kulus.android.data.preferences.ThemeMode
 import org.kulus.android.data.preferences.UserPreferences
-import org.kulus.android.data.repository.KulusRepository
+import org.kulus.android.data.repository.KulusV3Repository
 import org.kulus.android.util.DataExportService
 import org.kulus.android.util.GlucoseStatistics
 import java.io.File
@@ -27,7 +27,7 @@ sealed class SettingsUiState {
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val preferencesRepository: PreferencesRepository,
-    private val kulusRepository: KulusRepository,
+    private val kulusRepository: KulusV3Repository,
     private val tokenStore: TokenStore,
     private val dataExportService: DataExportService
 ) : ViewModel() {
@@ -106,6 +106,17 @@ class SettingsViewModel @Inject constructor(
                 preferencesRepository.updateLocalAlertsEnabled(enabled)
             } catch (e: Exception) {
                 _actionState.value = ActionState.Error("Failed to update alerts: ${e.message}")
+            }
+        }
+    }
+
+    fun updatePhoneNumber(phone: String) {
+        viewModelScope.launch {
+            try {
+                preferencesRepository.updatePhoneNumber(phone)
+                _actionState.value = ActionState.Success("Phone number updated. Sync to see your iOS data.")
+            } catch (e: Exception) {
+                _actionState.value = ActionState.Error("Failed to update phone: ${e.message}")
             }
         }
     }

@@ -21,10 +21,15 @@ android {
             useSupportLibrary = true
         }
 
-        // API configuration
+        // API configuration (v2 - legacy)
         buildConfigField("String", "API_BASE_URL", "\"https://kulus.org\"")
         buildConfigField("String", "API_KEY", "\"kulus-unified-api-key-2025\"")
         buildConfigField("String", "API_PASSWORD", "\"kulus2025\"")
+
+        // API configuration (v3 - new, Azure backend)
+        buildConfigField("String", "API_V3_BASE_URL", "\"https://kulus-api.azurewebsites.net/api/v3\"")
+        buildConfigField("String", "API_V3_KEY", "\"kulus_0e8ccd93621cb523b30ede3eb5082f86\"")
+        buildConfigField("String", "API_V3_PARTNER_ID", "\"malone\"")
     }
 
     buildTypes {
@@ -120,6 +125,9 @@ dependencies {
     // Coil for image loading
     implementation("io.coil-kt:coil-compose:2.5.0")
 
+    // Phone number validation (E.164 format)
+    implementation("com.googlecode.libphonenumber:libphonenumber:8.13.27")
+
     // Vico charts for glucose trends
     implementation("com.patrykandpatrick.vico:compose:1.13.1")
     implementation("com.patrykandpatrick.vico:compose-m3:1.13.1")
@@ -127,6 +135,9 @@ dependencies {
 
     // Testing
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.assertj:assertj-core:3.24.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("io.mockk:mockk:1.13.8")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.10.01"))

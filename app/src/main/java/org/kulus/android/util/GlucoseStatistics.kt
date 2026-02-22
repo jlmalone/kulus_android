@@ -136,9 +136,12 @@ enum class TimeRange(val displayName: String, val days: Int) {
     DAYS_90("90 Days", 90),
     YEAR_1("1 Year", 365);
 
+    val milliseconds: Long
+        get() = TimeUnit.DAYS.toMillis(days.toLong())
+
     fun getStartTimestamp(): Long {
         val now = System.currentTimeMillis()
-        return now - TimeUnit.DAYS.toMillis(days.toLong())
+        return now - milliseconds
     }
 }
 

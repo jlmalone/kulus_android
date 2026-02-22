@@ -20,7 +20,18 @@ This script is **safe to run multiple times**. If already set up, it will just r
 
 ## Project Overview
 
-**Kulus Android** is a glucose monitoring mobile application that integrates with the Kulus Firebase backend (https://kulus.org). It features a Matrix-inspired neon theme borrowed from the REDO Android project.
+**Kulus Android** is a glucose monitoring mobile application that integrates with the Kulus Firebase backend (https://kulus.org).
+
+### UI Design (January 2026)
+The UI has been redesigned to match the iOS Hamumu app for cross-platform consistency:
+- **iOS-adaptive theme** - Light/dark mode support matching iOS system colors
+- **Dashboard with greeting** - Time-based greeting ("Good Morning"), Kulus logo, sync status
+- **iOS-style cards** - 16dp rounded corners, proper shadows, capsule badges
+- **Latest Reading card** - Large glucose value with level capsule badge (Normal/Elevated/High/Low)
+- **Quick Actions grid** - 2-column grid matching iOS QuickActionsGrid
+- **Recent Readings** - Card with "View All" button and compact reading rows
+- **History with stats** - Period selector chips, statistics 2x2 grid, time-in-range bars
+- **Level icons** - CheckCircle (Normal), Warning (Elevated), Error (High), ArrowDownward (Low)
 
 ## Current Status
 
@@ -50,11 +61,11 @@ This script is **safe to run multiple times**. If already set up, it will just r
 - [x] `KulusRepository` with offline-first logic
 
 #### Theme & Design
-- [x] Matrix neon color palette from REDO Android
-- [x] Material3 dark theme
+- [x] iOS-adaptive color scheme (light/dark mode)
+- [x] Material3 theme matching iOS system colors
 - [x] Typography system
-- [x] Glucose level color coding (Green/Orange/Red/Purple)
-- [x] Basic MainActivity with status screen
+- [x] WCAG AA compliant glucose level colors (Normal/Elevated/High/Low)
+- [x] iOS-style card design with 16dp rounded corners
 
 #### UI Screens (Phase 1 - COMPLETED)
 - [x] `ReadingsListScreen` - Full list with pull-to-refresh
@@ -219,6 +230,53 @@ This script is **safe to run multiple times**. If already set up, it will just r
 ## Key Implementation Notes
 
 ### API Integration
+
+#### V3 API (NEW - Recommended)
+
+**Base URL**: https://kulus.web.app/api/v3
+**API Key**: kulus_0e8ccd93621cb523b30ede3eb5082f86 (in BuildConfig)
+**Partner ID**: malone
+**Auth**: Just `x-api-key` header (no token management needed!)
+
+V3 API uses phone numbers (E.164 format) instead of names for user identification.
+
+```kotlin
+// Using KulusV3Repository
+@Inject lateinit var v3Repository: KulusV3Repository
+
+// Add reading
+viewModelScope.launch {
+    v3Repository.addReading(
+        reading = 6.5,
+        units = GlucoseUnits.MMOL_L,
+        comment = "Morning reading",
+        snackPass = false
+    ).onSuccess { reading ->
+        // Success
+    }.onFailure { error ->
+        // Error
+    }
+}
+
+// Sync from server
+viewModelScope.launch {
+    v3Repository.syncReadingsFromServer()
+}
+```
+
+**V3 Components:**
+- `data/api/v3/KulusV3ApiService` - Retrofit interface
+- `data/api/v3/ApiKeyInterceptor` - Adds x-api-key header
+- `data/api/v3/GlucoseLevel` - Level classification (Green/Orange/Red/Purple)
+- `data/api/v3/GlucoseUnits` - Units with conversion (factor: 18.0182)
+- `data/api/v3/PhoneValidator` - E.164 phone validation (libphonenumber)
+- `data/api/v3/ReadingValidator` - 0.1-50 mmol/L range validation
+- `data/api/v3/dto/*` - Request/Response DTOs
+- `data/repository/KulusV3Repository` - High-level repository
+
+**V3 Tests:** 45 unit tests covering all validation and conversion logic
+
+#### V2 API (Legacy)
 
 **Base URL**: https://kulus.org
 **API Key**: kulus-unified-api-key-2025 (in BuildConfig)
@@ -412,8 +470,19 @@ app/src/main/java/org/kulus/android/
 ## Related Projects
 
 - **Kulus Web**: ~/WebstormProjects/Kulus-App (Firebase backend)
-- **Hamumu iOS**: ~/ios_code/hamumu (iOS version with Kulus integration)
+- **Hamumu iOS**: ~/ios_code/hamumu (iOS version with Kulus v3 integration)
+- **KulusCLI**: ~/IdeaProjects/KulusCLI (Kotlin CLI for v3 API)
 - **REDO Android**: ~/StudioProjects/redo-android (theme source)
+
+### Cross-Platform Compatibility
+
+All platforms (Android, iOS, Kotlin CLI) use **identical** logic for:
+- Glucose level classification (Purple <3.9, Green 3.9-7.8, Orange 7.8-11.1, Red >11.1 mmol/L)
+- Reading validation (0.1-50 mmol/L valid range, <3.0 or >20.0 dangerous)
+- Unit conversion (factor: 18.0182 mg/dL per mmol/L)
+- Phone validation (E.164 regex: `^\+[1-9]\d{1,14}$`)
+
+See `~/ios_code/hamumu/docs/CROSS_PLATFORM_COMPATIBILITY.md` for full compatibility report.
 
 ## Git Workflow
 

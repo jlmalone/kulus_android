@@ -12,6 +12,8 @@ import okhttp3.logging.HttpLoggingInterceptor
 import org.kulus.android.BuildConfig
 import org.kulus.android.data.api.AuthInterceptor
 import org.kulus.android.data.api.KulusApiService
+import org.kulus.android.data.api.v3.ApiKeyInterceptor
+import org.kulus.android.data.api.v3.KulusV3ApiService
 import org.kulus.android.data.local.GlucoseReadingDao
 import org.kulus.android.data.local.KulusDatabase
 import org.kulus.android.data.local.TokenStore
@@ -19,6 +21,7 @@ import org.kulus.android.data.local.UserProfileDao
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -96,5 +99,45 @@ object AppModule {
     @Singleton
     fun provideKulusApiService(retrofit: Retrofit): KulusApiService {
         return retrofit.create(KulusApiService::class.java)
+    }
+
+    // ==================== V3 API Providers ====================
+
+    @Provides
+    @Singleton
+    @Named("v3OkHttpClient")
+    fun provideV3OkHttpClient(apiKeyInterceptor: ApiKeyInterceptor): OkHttpClient {
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            level = if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor.Level.BODY
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
+        }
+
+        return OkHttpClient.Builder()
+            .addInterceptor(apiKeyInterceptor)
+            .addInterceptor(loggingInterceptor)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    @Named("v3Retrofit")
+    fun provideV3Retrofit(@Named("v3OkHttpClient") okHttpClient: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(BuildConfig.API_V3_BASE_URL + "/") // Ensure trailing slash
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideKulusV3ApiService(@Named("v3Retrofit") retrofit: Retrofit): KulusV3ApiService {
+        return retrofit.create(KulusV3ApiService::class.java)
     }
 }

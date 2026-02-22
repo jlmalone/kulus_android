@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import org.kulus.android.data.model.GlucoseReading
-import org.kulus.android.data.repository.KulusRepository
+import org.kulus.android.data.repository.KulusV3Repository
 import org.kulus.android.util.GlucoseStatistics
 import org.kulus.android.util.TimeRange
 import org.kulus.android.util.filterByTimeRange
@@ -21,12 +21,12 @@ data class TrendsUiState(
 
 @HiltViewModel
 class TrendsViewModel @Inject constructor(
-    private val repository: KulusRepository
+    private val repository: KulusV3Repository
 ) : ViewModel() {
 
     private val _selectedTimeRange = MutableStateFlow(TimeRange.DAYS_7)
 
-    // CRITICAL: Use getCurrentUserReadings() to prevent showing other users' data
+    // V3 API uses phone number for user identification (synced with iOS)
     val uiState: StateFlow<TrendsUiState> = combine(
         repository.getCurrentUserReadings(),
         _selectedTimeRange

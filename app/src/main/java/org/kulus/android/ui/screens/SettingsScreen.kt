@@ -206,6 +206,42 @@ private fun SettingsContent(
             icon = Icons.Default.Person
         )
 
+        var phoneText by remember { mutableStateOf(preferences.phoneNumber ?: "") }
+        SettingsTextField(
+            label = "Phone Number (for sync)",
+            value = phoneText,
+            onValueChange = { phoneText = it },
+            onDone = { viewModel.updatePhoneNumber(phoneText) },
+            icon = Icons.Default.Phone
+        )
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+            )
+        ) {
+            Row(
+                modifier = Modifier.padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Use the same phone number as iOS to sync readings across devices",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        }
+
         Divider(modifier = Modifier.padding(horizontal = 16.dp))
 
         // Glucose Settings
