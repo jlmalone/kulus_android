@@ -2,6 +2,24 @@
 
 This file provides context for Claude Code agents working on this repository.
 
+## Kulus Ecosystem Membership
+
+This project is part of the **Kulus glucose monitoring ecosystem**. The flagship project is **Hamumu iOS** (`~/ios_code/hamumu/`). See the [Ecosystem Doc](~/ios_code/hamumu/ECOSYSTEM.md) for full inventory, API contract, shared constants, and development priorities.
+
+| Project | Path | Role |
+|---------|------|------|
+| **Hamumu iOS** (flagship) | `~/ios_code/hamumu/` | iOS app, Bluetooth, Swift Packages |
+| **kulus_android** (this repo) | `~/StudioProjects/kulus_android/` | Android app (Compose, Hilt, Room) |
+| KulusCLI | `~/IdeaProjects/KulusCLI/` | Kotlin CLI client |
+| kulus-azure.ca | `~/WebstormProjects/kulus-azure.ca/` | Azure backend (production) |
+| kulus | `~/WebstormProjects/kulus/` | Firebase backend (original) |
+| Kulus-App | `~/WebstormProjects/Kulus-App/` | Firebase web app |
+| Kulus-WebApp | `~/WebstormProjects/Kulus-WebApp/` | Vanilla JS web app (Nodin) |
+| Kulus_website | `~/WebstormProjects/Kulus_website/` | Marketing landing page |
+| Kulus-V2 | `~/WebstormProjects/Kulus-V2/` | Archived legacy |
+
+**This project's role:** Android glucose monitoring client with v3 API integration, photo OCR, charts, onboarding, notifications, and tags.
+
 ## 🚀 First-Time Setup for AI Agents
 
 **IMPORTANT**: Before doing anything else, check if setup is complete:
