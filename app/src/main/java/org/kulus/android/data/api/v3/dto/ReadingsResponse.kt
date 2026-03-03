@@ -1,5 +1,6 @@
 package org.kulus.android.data.api.v3.dto
 
+import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
 import org.kulus.android.data.api.v3.GlucoseLevel
 import org.kulus.android.data.api.v3.GlucoseUnits
@@ -68,8 +69,9 @@ data class ReadingDto(
     @SerializedName("timestamp")
     val timestamp: String, // ISO8601 string, e.g. "2026-01-23T00:46:52.441Z"
 
+    // glucoseLevel can be a String ("Green") or Object {"glucoseLevel":5,"color":"Green"}
     @SerializedName("glucoseLevel")
-    val glucoseLevel: String? = null, // "Green", "Orange", "Red", "Purple"
+    val glucoseLevel: JsonElement? = null,
 
     @SerializedName("comment")
     val comment: String? = null, // API uses "comment" not "notes"
@@ -103,7 +105,14 @@ data class ReadingDto(
             GlucoseUnits.MG_DL -> GlucoseUnits.mgdlToMmol(reading)
         }
 
-        val level = glucoseLevel?.let { GlucoseLevel.fromString(it) }
+        // Extract level string from String or Object {"color":"Green"} format
+        val levelString: String? = when {
+            glucoseLevel == null || glucoseLevel.isJsonNull -> null
+            glucoseLevel.isJsonPrimitive -> glucoseLevel.asString
+            glucoseLevel.isJsonObject -> glucoseLevel.asJsonObject.get("color")?.asString
+            else -> null
+        }
+        val level = levelString?.let { GlucoseLevel.fromString(it) }
             ?: GlucoseLevel.classify(mmolValue)
 
         return GlucoseReading(

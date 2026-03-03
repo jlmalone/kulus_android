@@ -13,8 +13,8 @@ android {
         applicationId = "org.kulus.android"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -26,8 +26,8 @@ android {
         buildConfigField("String", "API_KEY", "\"kulus-unified-api-key-2025\"")
         buildConfigField("String", "API_PASSWORD", "\"kulus2025\"")
 
-        // API configuration (v3 - new, Azure backend)
-        buildConfigField("String", "API_V3_BASE_URL", "\"https://kulus-api.azurewebsites.net/api/v3\"")
+        // API configuration (v3 - Azure Canada via api.kulus.org)
+        buildConfigField("String", "API_V3_BASE_URL", "\"https://api.kulus.org/api/v3\"")
         buildConfigField("String", "API_V3_KEY", "\"kulus_0e8ccd93621cb523b30ede3eb5082f86\"")
         buildConfigField("String", "API_V3_PARTNER_ID", "\"malone\"")
     }

@@ -251,7 +251,7 @@ The UI has been redesigned to match the iOS Hamumu app for cross-platform consis
 
 #### V3 API (NEW - Recommended)
 
-**Base URL**: https://kulus.web.app/api/v3
+**Base URL**: https://api.kulus.org/api/v3
 **API Key**: kulus_0e8ccd93621cb523b30ede3eb5082f86 (in BuildConfig)
 **Partner ID**: malone
 **Auth**: Just `x-api-key` header (no token management needed!)
