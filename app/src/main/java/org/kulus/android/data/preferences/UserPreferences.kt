@@ -24,6 +24,16 @@ data class UserPreferences(
     val criticalLowThreshold: Double = 3.0,    // mmol/L (~54 mg/dL)
     val criticalHighThreshold: Double = 13.9,   // mmol/L (~250 mg/dL)
 
+    // Advanced alert thresholds
+    val highAlertThreshold: Double = 10.0,      // mmol/L - alert when above this
+    val lowAlertThreshold: Double = 3.9,        // mmol/L - alert when below this
+    val rapidRiseEnabled: Boolean = true,        // Alert on rapid glucose rise
+    val rapidFallEnabled: Boolean = true,        // Alert on rapid glucose fall
+    val alertCooldownMinutes: Int = 30,          // Minimum minutes between same alert type
+
+    // Biometric authentication
+    val biometricEnabled: Boolean = false,
+
     // Reminder preferences
     val remindersEnabled: Boolean = false,
     val morningReminderEnabled: Boolean = false,

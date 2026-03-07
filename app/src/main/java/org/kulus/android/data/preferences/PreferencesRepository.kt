@@ -34,6 +34,12 @@ class PreferencesRepository @Inject constructor(
         val LOCAL_ALERTS_ENABLED = booleanPreferencesKey("local_alerts_enabled")
         val CRITICAL_LOW_THRESHOLD = doublePreferencesKey("critical_low_threshold")
         val CRITICAL_HIGH_THRESHOLD = doublePreferencesKey("critical_high_threshold")
+        val HIGH_ALERT_THRESHOLD = doublePreferencesKey("high_alert_threshold")
+        val LOW_ALERT_THRESHOLD = doublePreferencesKey("low_alert_threshold")
+        val RAPID_RISE_ENABLED = booleanPreferencesKey("rapid_rise_enabled")
+        val RAPID_FALL_ENABLED = booleanPreferencesKey("rapid_fall_enabled")
+        val ALERT_COOLDOWN_MINUTES = intPreferencesKey("alert_cooldown_minutes")
+        val BIOMETRIC_ENABLED = booleanPreferencesKey("biometric_enabled")
         val REMINDERS_ENABLED = booleanPreferencesKey("reminders_enabled")
         val MORNING_REMINDER_ENABLED = booleanPreferencesKey("morning_reminder_enabled")
         val MORNING_REMINDER_HOUR = intPreferencesKey("morning_reminder_hour")
@@ -72,6 +78,12 @@ class PreferencesRepository @Inject constructor(
                 localAlertsEnabled = preferences[PreferencesKeys.LOCAL_ALERTS_ENABLED] ?: true,
                 criticalLowThreshold = preferences[PreferencesKeys.CRITICAL_LOW_THRESHOLD] ?: 3.0,
                 criticalHighThreshold = preferences[PreferencesKeys.CRITICAL_HIGH_THRESHOLD] ?: 13.9,
+                highAlertThreshold = preferences[PreferencesKeys.HIGH_ALERT_THRESHOLD] ?: 10.0,
+                lowAlertThreshold = preferences[PreferencesKeys.LOW_ALERT_THRESHOLD] ?: 3.9,
+                rapidRiseEnabled = preferences[PreferencesKeys.RAPID_RISE_ENABLED] ?: true,
+                rapidFallEnabled = preferences[PreferencesKeys.RAPID_FALL_ENABLED] ?: true,
+                alertCooldownMinutes = preferences[PreferencesKeys.ALERT_COOLDOWN_MINUTES] ?: 30,
+                biometricEnabled = preferences[PreferencesKeys.BIOMETRIC_ENABLED] ?: false,
                 remindersEnabled = preferences[PreferencesKeys.REMINDERS_ENABLED] ?: false,
                 morningReminderEnabled = preferences[PreferencesKeys.MORNING_REMINDER_ENABLED] ?: false,
                 morningReminderHour = preferences[PreferencesKeys.MORNING_REMINDER_HOUR] ?: 8,
@@ -175,6 +187,12 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
+    suspend fun updateBiometricEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.BIOMETRIC_ENABLED] = enabled
+        }
+    }
+
     suspend fun updateRemindersEnabled(enabled: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.REMINDERS_ENABLED] = enabled
@@ -194,6 +212,36 @@ class PreferencesRepository @Inject constructor(
             preferences[PreferencesKeys.EVENING_REMINDER_ENABLED] = enabled
             preferences[PreferencesKeys.EVENING_REMINDER_HOUR] = hour
             preferences[PreferencesKeys.EVENING_REMINDER_MINUTE] = minute
+        }
+    }
+
+    suspend fun updateHighAlertThreshold(threshold: Double) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.HIGH_ALERT_THRESHOLD] = threshold
+        }
+    }
+
+    suspend fun updateLowAlertThreshold(threshold: Double) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.LOW_ALERT_THRESHOLD] = threshold
+        }
+    }
+
+    suspend fun updateRapidRiseEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.RAPID_RISE_ENABLED] = enabled
+        }
+    }
+
+    suspend fun updateRapidFallEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.RAPID_FALL_ENABLED] = enabled
+        }
+    }
+
+    suspend fun updateAlertCooldownMinutes(minutes: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.ALERT_COOLDOWN_MINUTES] = minutes
         }
     }
 }

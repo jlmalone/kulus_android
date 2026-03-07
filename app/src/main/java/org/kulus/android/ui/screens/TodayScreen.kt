@@ -142,7 +142,7 @@ private fun DashboardHeader(
                 modifier = Modifier
                     .size(50.dp)
                     .clip(CircleShape)
-                    .background(BrandGreen),
+                    .background(MaterialTheme.colorScheme.primary),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -355,7 +355,7 @@ private fun QuickActionsSection(onAddClick: () -> Unit) {
                 title = "Add Reading",
                 subtitle = "New entry",
                 icon = Icons.Default.AddCircle,
-                color = BrandGreen,
+                color = MaterialTheme.colorScheme.primary,
                 onClick = onAddClick
             )
 
@@ -364,7 +364,7 @@ private fun QuickActionsSection(onAddClick: () -> Unit) {
                 title = "Export Data",
                 subtitle = "Share readings",
                 icon = Icons.Default.Share,
-                color = Color(0xFF9C27B0),  // Purple
+                color = MaterialTheme.colorScheme.tertiary,
                 onClick = { /* Export action */ }
             )
         }

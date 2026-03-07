@@ -72,13 +72,14 @@ class CameraViewModel @Inject constructor(
     }
 
     /**
-     * Process captured photo with OCR
+     * Process captured photo with OCR.
+     * Uses enhanced OCR: OpenAI Vision (primary) -> ML Kit (fallback).
      */
     fun processPhoto(uri: Uri) {
         viewModelScope.launch {
             _uiState.value = CameraUiState.ProcessingOCR(uri)
 
-            when (val result = ocrService.extractGlucoseValue(uri)) {
+            when (val result = ocrService.extractGlucoseValueEnhanced(uri)) {
                 is OCRResult.Success -> {
                     _uiState.value = CameraUiState.OCRComplete(
                         uri = uri,

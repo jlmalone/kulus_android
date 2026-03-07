@@ -101,6 +101,28 @@ object AppModule {
         return retrofit.create(KulusApiService::class.java)
     }
 
+    // ==================== OpenAI Vision API ====================
+
+    @Provides
+    @Singleton
+    @Named("openAiOkHttpClient")
+    fun provideOpenAiOkHttpClient(): OkHttpClient {
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            level = if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor.Level.BODY
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
+        }
+
+        return OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
+            .build()
+    }
+
     // ==================== V3 API Providers ====================
 
     @Provides

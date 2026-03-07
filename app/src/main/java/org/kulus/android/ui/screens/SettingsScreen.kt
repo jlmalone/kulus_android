@@ -351,14 +351,98 @@ private fun SettingsContent(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "• Alerts appear for critically high (>13.9 mmol/L) or low (<3.0 mmol/L) readings\n" +
+                            "• Rapid rise/fall alerts detect dangerous trends\n" +
                             "• \"Snack Pass\" readings won't trigger alerts\n" +
-                            "• Separate from SMS alerts managed by Kulus backend\n" +
-                            "• Reminder notifications coming in future updates",
+                            "• Separate from SMS alerts managed by Kulus backend",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
+
+        Divider(modifier = Modifier.padding(horizontal = 16.dp))
+
+        // Alert Thresholds Section
+        SettingsSectionHeader("Alert Thresholds")
+
+        // High alert threshold slider
+        var highThreshold by remember { mutableStateOf(preferences.highAlertThreshold.toFloat()) }
+        SettingsSliderOption(
+            title = "High Alert",
+            subtitle = "Alert when glucose exceeds ${String.format("%.1f", highThreshold)} mmol/L",
+            icon = Icons.Default.TrendingUp,
+            value = highThreshold,
+            valueRange = 7.0f..15.0f,
+            steps = 15,
+            onValueChange = { highThreshold = it },
+            onValueChangeFinished = { viewModel.updateHighAlertThreshold(highThreshold.toDouble()) }
+        )
+
+        // Low alert threshold slider
+        var lowThreshold by remember { mutableStateOf(preferences.lowAlertThreshold.toFloat()) }
+        SettingsSliderOption(
+            title = "Low Alert",
+            subtitle = "Alert when glucose drops below ${String.format("%.1f", lowThreshold)} mmol/L",
+            icon = Icons.Default.TrendingDown,
+            value = lowThreshold,
+            valueRange = 2.5f..5.0f,
+            steps = 9,
+            onValueChange = { lowThreshold = it },
+            onValueChangeFinished = { viewModel.updateLowAlertThreshold(lowThreshold.toDouble()) }
+        )
+
+        // Rapid rise toggle
+        SettingsToggleOption(
+            title = "Rapid Rise Alert",
+            subtitle = if (preferences.rapidRiseEnabled)
+                "Alert when glucose rises >2.0 mmol/L in 30 min"
+            else
+                "Rapid rise detection disabled",
+            icon = Icons.Default.TrendingUp,
+            checked = preferences.rapidRiseEnabled,
+            onCheckedChange = { viewModel.updateRapidRiseEnabled(it) }
+        )
+
+        // Rapid fall toggle
+        SettingsToggleOption(
+            title = "Rapid Fall Alert",
+            subtitle = if (preferences.rapidFallEnabled)
+                "Alert when glucose drops >2.0 mmol/L in 30 min"
+            else
+                "Rapid fall detection disabled",
+            icon = Icons.Default.TrendingDown,
+            checked = preferences.rapidFallEnabled,
+            onCheckedChange = { viewModel.updateRapidFallEnabled(it) }
+        )
+
+        // Alert cooldown
+        var cooldownMinutes by remember { mutableStateOf(preferences.alertCooldownMinutes.toFloat()) }
+        SettingsSliderOption(
+            title = "Alert Cooldown",
+            subtitle = "Wait ${cooldownMinutes.toInt()} min before repeating same alert",
+            icon = Icons.Default.Timer,
+            value = cooldownMinutes,
+            valueRange = 5.0f..120.0f,
+            steps = 22,
+            onValueChange = { cooldownMinutes = it },
+            onValueChangeFinished = { viewModel.updateAlertCooldownMinutes(cooldownMinutes.toInt()) }
+        )
+
+        Divider(modifier = Modifier.padding(horizontal = 16.dp))
+
+        // Security Section
+        SettingsSectionHeader("Security")
+
+        SettingsToggleOption(
+            title = "Biometric Authentication",
+            subtitle = if (preferences.biometricEnabled)
+                "Fingerprint or face unlock required on launch"
+            else
+                "No authentication required on launch",
+            icon = Icons.Default.Fingerprint,
+            checked = preferences.biometricEnabled,
+            onCheckedChange = { viewModel.updateBiometricEnabled(it) }
+        )
 
         Divider(modifier = Modifier.padding(horizontal = 16.dp))
 
@@ -679,6 +763,53 @@ private fun SettingsToggleOption(
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange
+        )
+    }
+}
+
+@Composable
+private fun SettingsSliderOption(
+    title: String,
+    subtitle: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    value: Float,
+    valueRange: ClosedFloatingPointRange<Float>,
+    steps: Int,
+    onValueChange: (Float) -> Unit,
+    onValueChangeFinished: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Column {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        Slider(
+            value = value,
+            onValueChange = onValueChange,
+            onValueChangeFinished = onValueChangeFinished,
+            valueRange = valueRange,
+            steps = steps,
+            modifier = Modifier.padding(start = 40.dp)
         )
     }
 }

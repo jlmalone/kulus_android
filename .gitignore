@@ -82,3 +82,6 @@ lint/tmp/
 
 # Mac
 .DS_Store
+
+# Claude Code session files
+CLAUDE_SESSION_*

@@ -100,12 +100,72 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun updateBiometricEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            try {
+                preferencesRepository.updateBiometricEnabled(enabled)
+            } catch (e: Exception) {
+                _actionState.value = ActionState.Error("Failed to update biometric setting: ${e.message}")
+            }
+        }
+    }
+
     fun updateLocalAlertsEnabled(enabled: Boolean) {
         viewModelScope.launch {
             try {
                 preferencesRepository.updateLocalAlertsEnabled(enabled)
             } catch (e: Exception) {
                 _actionState.value = ActionState.Error("Failed to update alerts: ${e.message}")
+            }
+        }
+    }
+
+    fun updateHighAlertThreshold(threshold: Double) {
+        viewModelScope.launch {
+            try {
+                preferencesRepository.updateHighAlertThreshold(threshold)
+            } catch (e: Exception) {
+                _actionState.value = ActionState.Error("Failed to update high alert threshold: ${e.message}")
+            }
+        }
+    }
+
+    fun updateLowAlertThreshold(threshold: Double) {
+        viewModelScope.launch {
+            try {
+                preferencesRepository.updateLowAlertThreshold(threshold)
+            } catch (e: Exception) {
+                _actionState.value = ActionState.Error("Failed to update low alert threshold: ${e.message}")
+            }
+        }
+    }
+
+    fun updateRapidRiseEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            try {
+                preferencesRepository.updateRapidRiseEnabled(enabled)
+            } catch (e: Exception) {
+                _actionState.value = ActionState.Error("Failed to update rapid rise setting: ${e.message}")
+            }
+        }
+    }
+
+    fun updateRapidFallEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            try {
+                preferencesRepository.updateRapidFallEnabled(enabled)
+            } catch (e: Exception) {
+                _actionState.value = ActionState.Error("Failed to update rapid fall setting: ${e.message}")
+            }
+        }
+    }
+
+    fun updateAlertCooldownMinutes(minutes: Int) {
+        viewModelScope.launch {
+            try {
+                preferencesRepository.updateAlertCooldownMinutes(minutes)
+            } catch (e: Exception) {
+                _actionState.value = ActionState.Error("Failed to update alert cooldown: ${e.message}")
             }
         }
     }

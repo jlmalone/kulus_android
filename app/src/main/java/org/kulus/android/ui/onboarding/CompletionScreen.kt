@@ -1,6 +1,5 @@
 package org.kulus.android.ui.onboarding
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
@@ -28,7 +27,6 @@ fun CompletionScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MatrixBackground)
             .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -45,7 +43,7 @@ fun CompletionScreen(
         Text(
             text = "All Set!",
             style = MaterialTheme.typography.headlineLarge,
-            color = MatrixNeon
+            color = MaterialTheme.colorScheme.primary
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -53,7 +51,7 @@ fun CompletionScreen(
         Text(
             text = "Welcome, $userName",
             style = MaterialTheme.typography.titleLarge,
-            color = MatrixTextPrimary,
+            color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center
         )
 
@@ -62,14 +60,14 @@ fun CompletionScreen(
         Text(
             text = "Your account has been created and you're ready to track your glucose readings.",
             style = MaterialTheme.typography.bodyMedium,
-            color = MatrixTextSecondary,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
         CircularProgressIndicator(
-            color = MatrixNeon,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(32.dp)
         )
 

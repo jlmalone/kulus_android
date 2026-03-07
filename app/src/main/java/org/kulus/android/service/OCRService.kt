@@ -2,25 +2,27 @@ package org.kulus.android.service
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
+import org.kulus.android.data.preferences.PreferencesRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
  * OCRService - Extracts glucose values from images using ML Kit Text Recognition
  *
- * Features:
- * - Uses ML Kit Vision API for text recognition
- * - Intelligent glucose value extraction with regex patterns
- * - Automatic unit detection (mg/dL vs mmol/L)
- * - Confidence scoring based on match quality
- * - Supports multiple glucose value formats
+ * This service now supports an enhanced OCR flow:
+ * - PRIMARY: OpenAI Vision API (GPT-4o-mini) via OpenAiOcrService
+ * - FALLBACK: ML Kit Text Recognition (on-device, no API key needed)
  *
- * Patterns detected:
+ * If the OpenAI API key is not configured, it skips straight to ML Kit.
+ *
+ * Patterns detected (ML Kit fallback):
  * - "123 mg/dL" or "123mg/dL"
  * - "6.5 mmol/L" or "6.5mmol/L"
  * - "Blood Glucose: 123"
@@ -29,8 +31,14 @@ import javax.inject.Singleton
  */
 @Singleton
 class OCRService @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val openAiOcrService: OpenAiOcrService,
+    private val preferencesRepository: PreferencesRepository
 ) {
+
+    companion object {
+        private const val TAG = "OCRService"
+    }
 
     private val textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
@@ -59,6 +67,46 @@ class OCRService @Inject constructor(
         } catch (e: Exception) {
             OCRResult.Error(e.message ?: "Unknown OCR error")
         }
+    }
+
+    /**
+     * Enhanced OCR extraction: tries OpenAI Vision first, falls back to ML Kit.
+     *
+     * - If openAiApiKey is blank/null, skips straight to ML Kit.
+     * - If OpenAI returns an error, falls back to ML Kit.
+     * - Returns a unified OCRResult from whichever source succeeds.
+     *
+     * @param imageUri URI of the image to process
+     * @return OCRResult with extracted value or error
+     */
+    suspend fun extractGlucoseValueEnhanced(imageUri: Uri): OCRResult {
+        val prefs = preferencesRepository.userPreferencesFlow.first()
+        val apiKey = prefs.openAiApiKey
+
+        // Try OpenAI Vision first if API key is configured
+        if (!apiKey.isNullOrBlank()) {
+            Log.d(TAG, "Attempting OpenAI Vision OCR (primary)")
+            val openAiResult = openAiOcrService.extractGlucoseValue(imageUri, apiKey)
+
+            if (openAiResult is OCRResult.Success) {
+                Log.d(TAG, "OpenAI Vision succeeded: ${openAiResult.value} ${openAiResult.unit}")
+                return openAiResult
+            }
+
+            // Log the failure and fall through to ML Kit
+            when (openAiResult) {
+                is OCRResult.Error -> Log.w(TAG, "OpenAI Vision failed: ${openAiResult.message}, falling back to ML Kit")
+                is OCRResult.NoGlucoseValueFound -> Log.w(TAG, "OpenAI Vision found no glucose value, falling back to ML Kit")
+                is OCRResult.NoTextFound -> Log.w(TAG, "OpenAI Vision found no text, falling back to ML Kit")
+                else -> Log.w(TAG, "OpenAI Vision returned unexpected result, falling back to ML Kit")
+            }
+        } else {
+            Log.d(TAG, "No OpenAI API key configured, using ML Kit directly")
+        }
+
+        // Fallback to ML Kit
+        Log.d(TAG, "Attempting ML Kit OCR (fallback)")
+        return extractGlucoseValue(imageUri)
     }
 
     /**

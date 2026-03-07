@@ -1,6 +1,5 @@
 package org.kulus.android.ui.onboarding
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -23,13 +22,12 @@ fun PrivacyScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MatrixBackground)
             .padding(32.dp)
     ) {
         Icon(
             imageVector = Icons.Default.Lock,
             contentDescription = null,
-            tint = MatrixNeon,
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .size(120.dp)
                 .align(Alignment.CenterHorizontally)
@@ -40,7 +38,7 @@ fun PrivacyScreen(
         Text(
             text = "Your Privacy Matters",
             style = MaterialTheme.typography.headlineMedium,
-            color = MatrixNeon,
+            color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
@@ -53,22 +51,22 @@ fun PrivacyScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             PrivacyPoint(
-                "🔒 Data Segregation",
+                "Data Segregation",
                 "You will only see YOUR glucose readings, never anyone else's data"
             )
 
             PrivacyPoint(
-                "🔑 User Identifier",
+                "User Identifier",
                 "Your name/phone number is used to keep your data separate from other users"
             )
 
             PrivacyPoint(
-                "📱 Multi-Device Sync",
+                "Multi-Device Sync",
                 "Use the SAME name on all your devices to sync your data everywhere"
             )
 
             PrivacyPoint(
-                "☁️ Cloud Storage",
+                "Cloud Storage",
                 "Data is securely backed up to the cloud with encryption"
             )
 
@@ -77,7 +75,7 @@ fun PrivacyScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = GlucoseRed.copy(alpha = 0.15f)
+                    containerColor = MaterialTheme.colorScheme.errorContainer
                 )
             ) {
                 Row(
@@ -87,14 +85,14 @@ fun PrivacyScreen(
                     Icon(
                         Icons.Default.Warning,
                         contentDescription = null,
-                        tint = GlucoseRed,
+                        tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(32.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
                         "IMPORTANT: Remember your name/phone number. You'll need it on other devices to access your data!",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MatrixTextPrimary
+                        color = MaterialTheme.colorScheme.onErrorContainer
                     )
                 }
             }

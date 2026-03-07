@@ -340,7 +340,7 @@ private fun StatisticsCard(
                     modifier = Modifier.weight(1f),
                     title = "Readings",
                     value = statistics.count.toString(),
-                    color = BrandGreen
+                    color = MaterialTheme.colorScheme.secondary
                 )
             }
 

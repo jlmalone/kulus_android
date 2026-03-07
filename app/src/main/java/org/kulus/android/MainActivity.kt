@@ -1,9 +1,9 @@
 package org.kulus.android
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -16,7 +16,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
 import org.kulus.android.data.preferences.PreferencesRepository
+import org.kulus.android.service.BiometricService
 import org.kulus.android.ui.screens.AddReadingScreen
+import org.kulus.android.ui.screens.BiometricPromptScreen
 import org.kulus.android.ui.screens.CameraScreen
 import org.kulus.android.ui.screens.DashboardScreen
 import org.kulus.android.ui.screens.ReadingDetailScreen
@@ -25,10 +27,13 @@ import org.kulus.android.ui.theme.KulusTheme
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var preferencesRepository: PreferencesRepository
+
+    @Inject
+    lateinit var biometricService: BiometricService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +44,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    KulusApp(preferencesRepository)
+                    KulusApp(preferencesRepository, biometricService)
                 }
             }
         }
@@ -47,21 +52,39 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun KulusApp(preferencesRepository: PreferencesRepository) {
+fun KulusApp(
+    preferencesRepository: PreferencesRepository,
+    biometricService: BiometricService
+) {
     val userPreferences by preferencesRepository.userPreferencesFlow.collectAsState(
         initial = org.kulus.android.data.preferences.UserPreferences()
     )
     var showOnboarding by remember { mutableStateOf(false) }
+    var isAuthenticated by remember { mutableStateOf(false) }
 
     // Determine initial state based on onboarding completion
     LaunchedEffect(userPreferences.onboardingCompleted) {
         showOnboarding = !userPreferences.onboardingCompleted
     }
 
+    // If biometric is not enabled, auto-authenticate
+    LaunchedEffect(userPreferences.biometricEnabled) {
+        if (!userPreferences.biometricEnabled) {
+            isAuthenticated = true
+        }
+    }
+
     if (showOnboarding) {
         OnboardingNav(
             onOnboardingComplete = {
                 showOnboarding = false
+            }
+        )
+    } else if (userPreferences.biometricEnabled && !isAuthenticated) {
+        BiometricPromptScreen(
+            biometricService = biometricService,
+            onAuthenticated = {
+                isAuthenticated = true
             }
         )
     } else {

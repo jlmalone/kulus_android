@@ -25,8 +25,13 @@ class NotificationService @Inject constructor(
 ) {
     companion object {
         private const val CHANNEL_ID_ALERTS = "glucose_alerts"
+        private const val CHANNEL_ID_TRENDS = "glucose_trends"
         private const val CHANNEL_ID_REMINDERS = "glucose_reminders"
         private const val NOTIFICATION_ID_ALERT = 1001
+        private const val NOTIFICATION_ID_RAPID_RISE = 1003
+        private const val NOTIFICATION_ID_RAPID_FALL = 1004
+        private const val NOTIFICATION_ID_HIGH = 1005
+        private const val NOTIFICATION_ID_LOW = 1006
         private const val NOTIFICATION_ID_REMINDER = 1002
 
         // Glucose thresholds in mmol/L
@@ -53,6 +58,17 @@ class NotificationService @Inject constructor(
                 enableLights(true)
             }
 
+            // Trend alerts channel
+            val trendsChannel = NotificationChannel(
+                CHANNEL_ID_TRENDS,
+                "Trend Alerts",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Rapid rise/fall and threshold trend alerts"
+                enableVibration(true)
+                enableLights(true)
+            }
+
             // Reminders channel
             val remindersChannel = NotificationChannel(
                 CHANNEL_ID_REMINDERS,
@@ -65,6 +81,7 @@ class NotificationService @Inject constructor(
 
             val notificationManager = context.getSystemService(NotificationManager::class.java)
             notificationManager.createNotificationChannel(alertsChannel)
+            notificationManager.createNotificationChannel(trendsChannel)
             notificationManager.createNotificationChannel(remindersChannel)
         }
     }
@@ -161,6 +178,120 @@ class NotificationService @Inject constructor(
             .build()
 
         NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_ALERT, notification)
+    }
+
+    fun showRapidRiseAlert(currentReading: Double, units: String, ratePerMinute: Double) {
+        if (!hasNotificationPermission()) return
+
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            context, 0, intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val rateFormatted = String.format("%.1f", ratePerMinute * 60)
+        val message = "Your glucose is rising rapidly at $rateFormatted $units/hr. " +
+                "Current: $currentReading $units. Consider monitoring closely."
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID_TRENDS)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("Rapid Glucose Rise")
+            .setContentText(message)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .build()
+
+        NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_RAPID_RISE, notification)
+    }
+
+    fun showRapidFallAlert(currentReading: Double, units: String, ratePerMinute: Double) {
+        if (!hasNotificationPermission()) return
+
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            context, 0, intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val rateFormatted = String.format("%.1f", kotlin.math.abs(ratePerMinute * 60))
+        val message = "Your glucose is falling rapidly at $rateFormatted $units/hr. " +
+                "Current: $currentReading $units. Consider having a snack."
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID_TRENDS)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("Rapid Glucose Fall")
+            .setContentText(message)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .build()
+
+        NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_RAPID_FALL, notification)
+    }
+
+    fun showHighAlert(currentReading: Double, units: String) {
+        if (!hasNotificationPermission()) return
+
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            context, 0, intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val message = "Your glucose is $currentReading $units, above your high alert threshold."
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID_TRENDS)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("High Glucose Alert")
+            .setContentText(message)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .build()
+
+        NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_HIGH, notification)
+    }
+
+    fun showLowAlert(currentReading: Double, units: String) {
+        if (!hasNotificationPermission()) return
+
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            context, 0, intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val message = "Your glucose is $currentReading $units, below your low alert threshold."
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID_TRENDS)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("Low Glucose Alert")
+            .setContentText(message)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .build()
+
+        NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_LOW, notification)
     }
 
     fun showTestingReminder(message: String = "Time to check your glucose level") {

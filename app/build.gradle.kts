@@ -69,6 +69,7 @@ android {
 
 dependencies {
     // Core Android
+    implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
@@ -124,6 +125,9 @@ dependencies {
 
     // Coil for image loading
     implementation("io.coil-kt:coil-compose:2.5.0")
+
+    // Biometric authentication
+    implementation("androidx.biometric:biometric:1.1.0")
 
     // Phone number validation (E.164 format)
     implementation("com.googlecode.libphonenumber:libphonenumber:8.13.27")

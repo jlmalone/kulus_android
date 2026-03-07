@@ -12,6 +12,7 @@ import org.kulus.android.data.model.GlucoseUnit
 import org.kulus.android.data.api.v3.GlucoseUnits
 import org.kulus.android.data.preferences.PreferencesRepository
 import org.kulus.android.data.repository.KulusV3Repository
+import org.kulus.android.service.GlucoseAlertService
 import org.kulus.android.service.NotificationService
 import javax.inject.Inject
 
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class AddReadingViewModel @Inject constructor(
     private val repository: KulusV3Repository,
     private val preferencesRepository: PreferencesRepository,
-    private val notificationService: NotificationService
+    private val notificationService: NotificationService,
+    private val glucoseAlertService: GlucoseAlertService
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<AddReadingUiState>(AddReadingUiState.Idle)
@@ -63,6 +65,8 @@ class AddReadingViewModel @Inject constructor(
                         reading = glucoseReading,
                         alertsEnabled = preferences.localAlertsEnabled
                     )
+                    // Check advanced alerts (rapid rise/fall, threshold trends)
+                    glucoseAlertService.checkAlerts(glucoseReading, preferences)
                     _uiState.value = AddReadingUiState.Success
                 }
                 .onFailure { error ->

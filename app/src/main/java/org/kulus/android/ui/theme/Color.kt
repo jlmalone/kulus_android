@@ -2,45 +2,43 @@ package org.kulus.android.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// iOS-Style Adaptive Colors (Light Mode)
-val LightBackground = Color(0xFFF2F2F7)  // iOS systemBackground
-val LightSecondaryBackground = Color(0xFFFFFFFF)  // iOS secondarySystemBackground
-val LightSurface = Color(0xFFFFFFFF)  // Card backgrounds
-val LightSurfaceVariant = Color(0xFFF2F2F7)  // systemGray6
-val LightTextPrimary = Color(0xFF000000)  // label
-val LightTextSecondary = Color(0xFF8E8E93)  // secondaryLabel
+// ============================================================
+// Earth & Wellness Theme - Kulus Glucose Monitoring
+// Warm, grounded palette inspired by nature and wellness
+// ============================================================
 
-// iOS-Style Adaptive Colors (Dark Mode)
-val DarkBackground = Color(0xFF000000)  // iOS systemBackground dark
-val DarkSecondaryBackground = Color(0xFF1C1C1E)  // iOS secondarySystemBackground dark
-val DarkSurface = Color(0xFF1C1C1E)  // Card backgrounds
-val DarkSurfaceVariant = Color(0xFF2C2C2E)  // systemGray6 dark
-val DarkTextPrimary = Color(0xFFFFFFFF)  // label dark
-val DarkTextSecondary = Color(0xFF8E8E93)  // secondaryLabel dark
+// --- Light Mode ---
+val LightBackground = Color(0xFFFBF8F4)       // Warm cream
+val LightSecondaryBackground = Color(0xFFFFFFFF)
+val LightSurface = Color(0xFFFFFFFF)
+val LightSurfaceVariant = Color(0xFFF0EDE8)    // Light warm gray
+val LightTextPrimary = Color(0xFF2C2417)       // Dark warm brown
+val LightTextSecondary = Color(0xFF7A6E5D)     // Muted brown
 
-// Brand Colors (matching iOS)
-val BrandGreen = Color(0xFF33B249)  // Kulus green
-val BrandMint = Color(0xFF33E6CC)  // Kulus mint
-val BrandBlue = Color(0xFF007AFF)  // iOS blue
+// --- Dark Mode ---
+val DarkBackground = Color(0xFF1A1714)         // Deep earth brown
+val DarkSecondaryBackground = Color(0xFF2A2420) // Dark bark
+val DarkSurface = Color(0xFF2A2420)            // Dark bark
+val DarkSurfaceVariant = Color(0xFF3A332C)     // Dark moss
+val DarkTextPrimary = Color(0xFFF5EDE4)        // Warm white
+val DarkTextSecondary = Color(0xFFA89B8A)      // Muted sand
 
-// Glucose Level Colors - WCAG AA compliant (matching iOS)
-val GlucoseLow = Color(0xFFCC0000)  // Dark red for low (purple in original)
-val GlucoseNormal = Color(0xFF008000)  // Dark green for normal
-val GlucoseElevated = Color(0xFFE68000)  // Dark orange for elevated
-val GlucoseHigh = Color(0xFFCC0000)  // Dark red for high
+// --- Brand / Earth Colors ---
+val EarthSageGreen = Color(0xFF6B8F71)         // Primary: calming sage
+val EarthWarmBrown = Color(0xFF8B6F47)         // Secondary: grounded brown
+val EarthTerracotta = Color(0xFFC2704E)        // Tertiary: warm accent
+val EarthSoftGold = Color(0xFFD4A96A)          // Dark-mode secondary warmth
+val EarthLightSage = Color(0xFFA8C5AD)         // Dark-mode primary sage
+val EarthSoftTerracotta = Color(0xFFD99B7C)    // Dark-mode tertiary
 
-// Legacy Matrix Colors (kept for compatibility)
-val MatrixBackground = Color(0xFF020B09)
-val MatrixPanelStart = Color(0xFF031413)
-val MatrixPanelEnd = Color(0xFF061F18)
-val MatrixNeon = Color(0xFF00FFB8)
-val MatrixNeonDim = Color(0x9900FFB8)
-val MatrixAmber = Color(0xFFFFC833)
-val MatrixTextPrimary = Color(0xFFB8FFE6)
-val MatrixTextSecondary = Color(0x99B8FFE6)
+// --- Glucose Level Colors (WCAG AA compliant — DO NOT CHANGE) ---
+val GlucoseLow = Color(0xFFCC0000)             // Dark red for low
+val GlucoseNormal = Color(0xFF008000)          // Dark green for normal
+val GlucoseElevated = Color(0xFFE68000)        // Dark orange for elevated
+val GlucoseHigh = Color(0xFFCC0000)            // Dark red for high
 
-// Legacy Glucose Colors (for backward compatibility)
+// Legacy aliases (for backward compatibility in GlucoseReadingCard, etc.)
 val GlucoseGreen = GlucoseNormal
 val GlucoseOrange = GlucoseElevated
 val GlucoseRed = GlucoseHigh
-val GlucoseCrimson = GlucoseLow  // Purple/Critical
+val GlucoseCrimson = GlucoseLow

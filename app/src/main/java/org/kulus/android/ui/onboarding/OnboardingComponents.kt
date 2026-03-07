@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import org.kulus.android.ui.theme.*
 
 /**
  * Shared components for onboarding screens
@@ -32,7 +31,7 @@ fun FeatureItem(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = MatrixNeon,
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(48.dp)
         )
         Spacer(modifier = Modifier.width(16.dp))
@@ -40,13 +39,13 @@ fun FeatureItem(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                color = MatrixTextPrimary
+                color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MatrixTextSecondary
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -66,13 +65,13 @@ fun PrivacyPoint(
         Text(
             text = title,
             style = MaterialTheme.typography.titleSmall,
-            color = MatrixAmber
+            color = MaterialTheme.colorScheme.tertiary
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = description,
             style = MaterialTheme.typography.bodyMedium,
-            color = MatrixTextSecondary
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
@@ -97,7 +96,7 @@ fun OnboardingNavigationButtons(
             OutlinedButton(
                 onClick = onBack,
                 colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = MatrixTextPrimary
+                    contentColor = MaterialTheme.colorScheme.onBackground
                 )
             ) {
                 Text("Back")
@@ -107,8 +106,8 @@ fun OnboardingNavigationButtons(
             onClick = onNext,
             enabled = nextEnabled,
             colors = ButtonDefaults.buttonColors(
-                containerColor = MatrixNeon,
-                contentColor = MatrixBackground
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             )
         ) {
             Text(nextText)
@@ -131,18 +130,15 @@ fun PageIndicator(
             Box(
                 modifier = Modifier
                     .padding(horizontal = 4.dp)
-                    .size(if (index == currentPage) 12.dp else 8.dp)
-                    .then(
-                        if (index == currentPage) {
-                            Modifier
-                        } else {
-                            Modifier
-                        }
-                    ),
+                    .size(if (index == currentPage) 12.dp else 8.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Surface(
-                    color = if (index == currentPage) MatrixNeon else MatrixTextSecondary.copy(alpha = 0.3f),
+                    color = if (index == currentPage) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
+                    },
                     shape = MaterialTheme.shapes.small
                 ) {
                     Box(modifier = Modifier.size(if (index == currentPage) 12.dp else 8.dp))

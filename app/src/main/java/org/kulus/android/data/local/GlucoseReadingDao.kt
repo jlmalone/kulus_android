@@ -39,4 +39,7 @@ interface GlucoseReadingDao {
 
     @Query("UPDATE glucose_readings SET synced = 1 WHERE id = :id")
     suspend fun markAsSynced(id: String)
+
+    @Query("SELECT * FROM glucose_readings WHERE timestamp >= :sinceTimestamp ORDER BY timestamp ASC")
+    suspend fun getReadingsSince(sinceTimestamp: Long): List<GlucoseReading>
 }

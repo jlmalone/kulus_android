@@ -1,6 +1,5 @@
 package org.kulus.android.ui.onboarding
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -11,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.kulus.android.ui.theme.*
 
 @Composable
 fun FeaturesScreen(
@@ -22,13 +20,12 @@ fun FeaturesScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MatrixBackground)
             .padding(32.dp)
     ) {
         Text(
             text = "What Kulus Does",
             style = MaterialTheme.typography.headlineMedium,
-            color = MatrixNeon
+            color = MaterialTheme.colorScheme.primary
         )
 
         Spacer(modifier = Modifier.height(32.dp))

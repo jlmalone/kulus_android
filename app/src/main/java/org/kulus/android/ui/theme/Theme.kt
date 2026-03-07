@@ -12,56 +12,60 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-// Light Color Scheme (iOS-style)
+// Light Color Scheme (Earth & Wellness)
 private val LightColorScheme = lightColorScheme(
-    primary = BrandBlue,
+    primary = EarthSageGreen,
     onPrimary = Color.White,
-    primaryContainer = BrandBlue.copy(alpha = 0.1f),
-    onPrimaryContainer = BrandBlue,
-    secondary = BrandGreen,
+    primaryContainer = EarthSageGreen.copy(alpha = 0.12f),
+    onPrimaryContainer = Color(0xFF1B3B20),
+    secondary = EarthWarmBrown,
     onSecondary = Color.White,
-    secondaryContainer = BrandGreen.copy(alpha = 0.1f),
-    onSecondaryContainer = BrandGreen,
-    tertiary = BrandMint,
+    secondaryContainer = EarthWarmBrown.copy(alpha = 0.12f),
+    onSecondaryContainer = Color(0xFF3D2E18),
+    tertiary = EarthTerracotta,
     onTertiary = Color.White,
+    tertiaryContainer = EarthTerracotta.copy(alpha = 0.12f),
+    onTertiaryContainer = Color(0xFF5A2D1A),
     background = LightBackground,
     onBackground = LightTextPrimary,
     surface = LightSurface,
     onSurface = LightTextPrimary,
     surfaceVariant = LightSurfaceVariant,
     onSurfaceVariant = LightTextSecondary,
-    outline = Color(0xFFC6C6C8),  // iOS separator color
-    outlineVariant = Color(0xFFE5E5EA),
-    error = Color(0xFFFF3B30),  // iOS red
+    outline = Color(0xFFCBC4BA),
+    outlineVariant = Color(0xFFE5DED5),
+    error = Color(0xFFBA1A1A),
     onError = Color.White,
-    errorContainer = Color(0xFFFF3B30).copy(alpha = 0.1f),
-    onErrorContainer = Color(0xFFFF3B30)
+    errorContainer = Color(0xFFFFDAD6),
+    onErrorContainer = Color(0xFF410002)
 )
 
-// Dark Color Scheme (iOS-style)
+// Dark Color Scheme (Earth & Wellness)
 private val DarkColorScheme = darkColorScheme(
-    primary = BrandBlue,
-    onPrimary = Color.White,
-    primaryContainer = BrandBlue.copy(alpha = 0.2f),
-    onPrimaryContainer = BrandBlue,
-    secondary = BrandGreen,
-    onSecondary = Color.White,
-    secondaryContainer = BrandGreen.copy(alpha = 0.2f),
-    onSecondaryContainer = BrandGreen,
-    tertiary = BrandMint,
-    onTertiary = Color.White,
+    primary = EarthLightSage,
+    onPrimary = Color(0xFF1B3B20),
+    primaryContainer = EarthSageGreen.copy(alpha = 0.25f),
+    onPrimaryContainer = EarthLightSage,
+    secondary = EarthSoftGold,
+    onSecondary = Color(0xFF3D2E18),
+    secondaryContainer = EarthWarmBrown.copy(alpha = 0.25f),
+    onSecondaryContainer = EarthSoftGold,
+    tertiary = EarthSoftTerracotta,
+    onTertiary = Color(0xFF5A2D1A),
+    tertiaryContainer = EarthTerracotta.copy(alpha = 0.25f),
+    onTertiaryContainer = EarthSoftTerracotta,
     background = DarkBackground,
     onBackground = DarkTextPrimary,
     surface = DarkSurface,
     onSurface = DarkTextPrimary,
     surfaceVariant = DarkSurfaceVariant,
     onSurfaceVariant = DarkTextSecondary,
-    outline = Color(0xFF48484A),  // iOS separator color dark
-    outlineVariant = Color(0xFF38383A),
-    error = Color(0xFFFF453A),  // iOS red dark
-    onError = Color.White,
-    errorContainer = Color(0xFFFF453A).copy(alpha = 0.2f),
-    onErrorContainer = Color(0xFFFF453A)
+    outline = Color(0xFF5A524A),
+    outlineVariant = Color(0xFF443D36),
+    error = Color(0xFFFFB4AB),
+    onError = Color(0xFF690005),
+    errorContainer = Color(0xFF93000A),
+    onErrorContainer = Color(0xFFFFB4AB)
 )
 
 @Composable

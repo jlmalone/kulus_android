@@ -1,6 +1,5 @@
 package org.kulus.android.ui.onboarding
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -29,13 +28,12 @@ fun AccountSetupScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MatrixBackground)
             .padding(32.dp)
     ) {
         Text(
             text = "Set Up Your Account",
             style = MaterialTheme.typography.headlineMedium,
-            color = MatrixNeon
+            color = MaterialTheme.colorScheme.primary
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -48,7 +46,7 @@ fun AccountSetupScreen(
             Text(
                 text = "Enter your name or phone number",
                 style = MaterialTheme.typography.bodyLarge,
-                color = MatrixTextPrimary
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -56,7 +54,7 @@ fun AccountSetupScreen(
             Text(
                 text = "This will be used to identify your data. Use the same identifier on all your devices.",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MatrixTextSecondary
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -72,9 +70,9 @@ fun AccountSetupScreen(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MatrixNeon,
-                    focusedLabelColor = MatrixNeon,
-                    cursorColor = MatrixNeon
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    cursorColor = MaterialTheme.colorScheme.primary
                 ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
             )
@@ -93,11 +91,11 @@ fun AccountSetupScreen(
                 modifier = Modifier.fillMaxWidth(),
                 isError = showError,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MatrixNeon,
-                    focusedLabelColor = MatrixNeon,
-                    cursorColor = MatrixNeon,
-                    errorBorderColor = GlucoseRed,
-                    errorLabelColor = GlucoseRed
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    cursorColor = MaterialTheme.colorScheme.primary,
+                    errorBorderColor = MaterialTheme.colorScheme.error,
+                    errorLabelColor = MaterialTheme.colorScheme.error
                 ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
             )
@@ -105,7 +103,7 @@ fun AccountSetupScreen(
             if (showError) {
                 Text(
                     text = errorMessage,
-                    color = GlucoseRed,
+                    color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 16.dp, top = 4.dp)
                 )
@@ -116,7 +114,7 @@ fun AccountSetupScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = MatrixAmber.copy(alpha = 0.15f)
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer
                 )
             ) {
                 Row(
@@ -126,14 +124,14 @@ fun AccountSetupScreen(
                     Icon(
                         Icons.Default.Info,
                         contentDescription = null,
-                        tint = MatrixAmber,
+                        tint = MaterialTheme.colorScheme.tertiary,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        "Examples:\n• Full name: \"Sarah Johnson\"\n• Phone: \"(510) 555-1234\"\n• Email: \"sarah@example.com\"",
+                        "Examples:\n\u2022 Full name: \"Sarah Johnson\"\n\u2022 Phone: \"(510) 555-1234\"\n\u2022 Email: \"sarah@example.com\"",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MatrixTextPrimary
+                        color = MaterialTheme.colorScheme.onTertiaryContainer
                     )
                 }
             }

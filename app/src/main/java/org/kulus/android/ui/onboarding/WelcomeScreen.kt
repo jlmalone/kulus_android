@@ -1,7 +1,6 @@
 package org.kulus.android.ui.onboarding
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -11,7 +10,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.kulus.android.R
-import org.kulus.android.ui.theme.*
 
 @Composable
 fun WelcomeScreen(
@@ -21,7 +19,6 @@ fun WelcomeScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MatrixBackground)
             .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -38,7 +35,7 @@ fun WelcomeScreen(
         Text(
             text = "Welcome to Kulus",
             style = MaterialTheme.typography.headlineLarge,
-            color = MatrixNeon,
+            color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center
         )
 
@@ -47,7 +44,7 @@ fun WelcomeScreen(
         Text(
             text = "Track your glucose readings securely\nwith privacy and precision",
             style = MaterialTheme.typography.bodyLarge,
-            color = MatrixTextPrimary,
+            color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center
         )
 
@@ -59,8 +56,8 @@ fun WelcomeScreen(
                 .fillMaxWidth()
                 .height(56.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MatrixNeon,
-                contentColor = MatrixBackground
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             )
         ) {
             Text(
