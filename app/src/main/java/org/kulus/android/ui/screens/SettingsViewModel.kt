@@ -1,6 +1,7 @@
 package org.kulus.android.ui.screens
 
 import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,6 +14,7 @@ import org.kulus.android.data.preferences.PreferencesRepository
 import org.kulus.android.data.preferences.ThemeMode
 import org.kulus.android.data.preferences.UserPreferences
 import org.kulus.android.data.repository.KulusV3Repository
+import org.kulus.android.service.SyncQueueManager
 import org.kulus.android.util.DataExportService
 import org.kulus.android.util.GlucoseStatistics
 import java.io.File
@@ -29,7 +31,8 @@ class SettingsViewModel @Inject constructor(
     private val preferencesRepository: PreferencesRepository,
     private val kulusRepository: KulusV3Repository,
     private val tokenStore: TokenStore,
-    private val dataExportService: DataExportService
+    private val dataExportService: DataExportService,
+    private val syncQueueManager: SyncQueueManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<SettingsUiState>(SettingsUiState.Loading)
@@ -260,6 +263,32 @@ class SettingsViewModel @Inject constructor(
                 dataExportService.cleanupOldExports()
             } catch (e: Exception) {
                 _actionState.value = ActionState.Error("Export failed: ${e.message}")
+            }
+        }
+    }
+
+    fun forceSync() {
+        viewModelScope.launch {
+            _actionState.value = ActionState.Loading("Syncing...")
+            try {
+                // Process pending queue with enterprise backoff
+                val queueResult = syncQueueManager.processPendingQueue()
+                queueResult.onSuccess { count ->
+                    Log.d("SettingsVM", "Sync queue: $count synced")
+                }
+
+                // Also sync from server
+                val serverResult = kulusRepository.syncReadingsFromServer()
+                serverResult.onSuccess { readings ->
+                    val pending = syncQueueManager.getPendingCount()
+                    _actionState.value = ActionState.Success(
+                        "Sync complete. Downloaded ${readings.size} readings. $pending pending."
+                    )
+                }.onFailure { error ->
+                    _actionState.value = ActionState.Error("Sync failed: ${error.message}")
+                }
+            } catch (e: Exception) {
+                _actionState.value = ActionState.Error("Sync failed: ${e.message}")
             }
         }
     }

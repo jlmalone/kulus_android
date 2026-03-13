@@ -59,7 +59,7 @@ class PreferencesRepository @Inject constructor(
         }
         .map { preferences ->
             UserPreferences(
-                defaultName = preferences[PreferencesKeys.DEFAULT_NAME] ?: "mobile-user",
+                defaultName = preferences[PreferencesKeys.DEFAULT_NAME] ?: "",
                 preferredUnit = GlucoseUnit.fromString(
                     preferences[PreferencesKeys.PREFERRED_UNIT] ?: "mmol/L"
                 ),

@@ -9,7 +9,7 @@ import org.kulus.android.data.model.UserProfile
 
 @Database(
     entities = [GlucoseReading::class, UserProfile::class],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class KulusDatabase : RoomDatabase() {
@@ -47,8 +47,6 @@ abstract class KulusDatabase : RoomDatabase() {
                     )
                 """.trimIndent())
 
-                // Create default profile from existing user preferences
-                // Set it as active and use Matrix neon color
                 database.execSQL("""
                     INSERT INTO user_profiles (
                         id, name, phoneNumber, defaultUnit, isActive,
@@ -65,15 +63,26 @@ abstract class KulusDatabase : RoomDatabase() {
                     )
                 """.trimIndent())
 
-                // Add profileId column to glucose_readings table
                 database.execSQL("ALTER TABLE glucose_readings ADD COLUMN profileId TEXT NOT NULL DEFAULT '00000000-0000-0000-0000-000000000001'")
 
-                // Update reading count for default profile
                 database.execSQL("""
                     UPDATE user_profiles
                     SET readingCount = (SELECT COUNT(*) FROM glucose_readings WHERE profileId = '00000000-0000-0000-0000-000000000001')
                     WHERE id = '00000000-0000-0000-0000-000000000001'
                 """.trimIndent())
+            }
+        }
+
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Sync queue fields for enterprise-grade offline sync
+                database.execSQL("ALTER TABLE glucose_readings ADD COLUMN pendingSync INTEGER NOT NULL DEFAULT 0")
+                database.execSQL("ALTER TABLE glucose_readings ADD COLUMN syncAttemptCount INTEGER NOT NULL DEFAULT 0")
+                database.execSQL("ALTER TABLE glucose_readings ADD COLUMN lastSyncAttempt INTEGER")
+                // Device name for Bluetooth readings
+                database.execSQL("ALTER TABLE glucose_readings ADD COLUMN deviceName TEXT")
+                // Mark existing unsynced readings as pending
+                database.execSQL("UPDATE glucose_readings SET pendingSync = 1 WHERE synced = 0")
             }
         }
     }

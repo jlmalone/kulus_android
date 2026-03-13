@@ -24,6 +24,8 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
     onBackClick: () -> Unit = {},
     onSignedOut: () -> Unit = {},
+    onHelpClick: () -> Unit = {},
+    onApiLogClick: () -> Unit = {},
     hideTopBar: Boolean = false
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -117,7 +119,9 @@ fun SettingsScreen(
                     viewModel = viewModel,
                     onClearDataClick = { showClearDataDialog = true },
                     onSignOutClick = { showSignOutDialog = true },
-                    onApiKeyClick = { showApiKeyDialog = true }
+                    onApiKeyClick = { showApiKeyDialog = true },
+                    onHelpClick = onHelpClick,
+                    onApiLogClick = onApiLogClick
                 )
             }
         }
@@ -187,7 +191,9 @@ private fun SettingsContent(
     viewModel: SettingsViewModel,
     onClearDataClick: () -> Unit,
     onSignOutClick: () -> Unit,
-    onApiKeyClick: () -> Unit
+    onApiKeyClick: () -> Unit,
+    onHelpClick: () -> Unit = {},
+    onApiLogClick: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -577,6 +583,46 @@ private fun SettingsContent(
             icon = Icons.Default.Logout,
             onClick = onSignOutClick,
             danger = true
+        )
+
+        Divider(modifier = Modifier.padding(horizontal = 16.dp))
+
+        // Debug Section
+        SettingsSectionHeader("Debug")
+
+        SettingsClickableOption(
+            title = "API Log",
+            subtitle = "View API requests and responses",
+            icon = Icons.Default.BugReport,
+            onClick = onApiLogClick
+        )
+
+        SettingsClickableOption(
+            title = "Force Sync",
+            subtitle = "Sync all pending readings now",
+            icon = Icons.Default.Sync,
+            onClick = { viewModel.forceSync() }
+        )
+
+        SettingsInfoOption(
+            title = "Phone Number",
+            subtitle = if (preferences.phoneNumber.isNullOrBlank())
+                "Not configured — sync disabled"
+            else
+                preferences.phoneNumber!!,
+            icon = Icons.Default.Phone
+        )
+
+        Divider(modifier = Modifier.padding(horizontal = 16.dp))
+
+        // Help Section
+        SettingsSectionHeader("Support")
+
+        SettingsClickableOption(
+            title = "Help & FAQ",
+            subtitle = "Glucose education and app guide",
+            icon = Icons.Default.HelpOutline,
+            onClick = onHelpClick
         )
 
         Divider(modifier = Modifier.padding(horizontal = 16.dp))

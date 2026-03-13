@@ -171,7 +171,10 @@ class KulusV3Repository @Inject constructor(
                 glucoseLevel = null,
                 synced = false,
                 photoUri = photoUri,
-                tags = if (tags.isNotEmpty()) GlucoseReading.tagsToString(tags) else null
+                tags = if (tags.isNotEmpty()) GlucoseReading.tagsToString(tags) else null,
+                pendingSync = true,
+                syncAttemptCount = 0,
+                lastSyncAttempt = null
             )
 
             // Save locally first

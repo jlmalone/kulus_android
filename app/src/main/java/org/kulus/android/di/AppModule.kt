@@ -18,6 +18,8 @@ import org.kulus.android.data.local.GlucoseReadingDao
 import org.kulus.android.data.local.KulusDatabase
 import org.kulus.android.data.local.TokenStore
 import org.kulus.android.data.local.UserProfileDao
+import org.kulus.android.service.ApiLogger
+import org.kulus.android.service.ApiLoggerInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -41,7 +43,8 @@ object AppModule {
             .addMigrations(
                 KulusDatabase.MIGRATION_1_2,
                 KulusDatabase.MIGRATION_2_3,
-                KulusDatabase.MIGRATION_3_4
+                KulusDatabase.MIGRATION_3_4,
+                KulusDatabase.MIGRATION_4_5
             )
             .fallbackToDestructiveMigration()
             .build()
@@ -128,7 +131,7 @@ object AppModule {
     @Provides
     @Singleton
     @Named("v3OkHttpClient")
-    fun provideV3OkHttpClient(apiKeyInterceptor: ApiKeyInterceptor): OkHttpClient {
+    fun provideV3OkHttpClient(apiKeyInterceptor: ApiKeyInterceptor, apiLogger: ApiLogger): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = if (BuildConfig.DEBUG) {
                 HttpLoggingInterceptor.Level.BODY
@@ -139,6 +142,7 @@ object AppModule {
 
         return OkHttpClient.Builder()
             .addInterceptor(apiKeyInterceptor)
+            .addInterceptor(ApiLoggerInterceptor(apiLogger))
             .addInterceptor(loggingInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)

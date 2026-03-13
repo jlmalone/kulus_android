@@ -6,7 +6,7 @@ import org.kulus.android.data.model.GlucoseUnit
  * User preferences for the Kulus Android app
  */
 data class UserPreferences(
-    val defaultName: String = "mobile-user",
+    val defaultName: String = "",
     val preferredUnit: GlucoseUnit = GlucoseUnit.MMOL_L,
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val openAiApiKey: String? = null,

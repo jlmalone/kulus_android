@@ -37,9 +37,25 @@ interface GlucoseReadingDao {
     @Query("SELECT * FROM glucose_readings WHERE synced = 0")
     suspend fun getUnsyncedReadings(): List<GlucoseReading>
 
-    @Query("UPDATE glucose_readings SET synced = 1 WHERE id = :id")
+    @Query("UPDATE glucose_readings SET synced = 1, pendingSync = 0 WHERE id = :id")
     suspend fun markAsSynced(id: String)
 
     @Query("SELECT * FROM glucose_readings WHERE timestamp >= :sinceTimestamp ORDER BY timestamp ASC")
     suspend fun getReadingsSince(sinceTimestamp: Long): List<GlucoseReading>
+
+    // Enterprise sync queue queries
+    @Query("SELECT * FROM glucose_readings WHERE pendingSync = 1 AND syncAttemptCount < :maxRetries ORDER BY timestamp ASC LIMIT :batchSize")
+    suspend fun getPendingSyncReadings(maxRetries: Int = 10, batchSize: Int = 50): List<GlucoseReading>
+
+    @Query("UPDATE glucose_readings SET syncAttemptCount = syncAttemptCount + 1, lastSyncAttempt = :timestamp WHERE id = :id")
+    suspend fun incrementSyncAttempt(id: String, timestamp: Long = System.currentTimeMillis())
+
+    @Query("UPDATE glucose_readings SET pendingSync = 1 WHERE id = :id")
+    suspend fun markPendingSync(id: String)
+
+    @Query("SELECT COUNT(*) FROM glucose_readings WHERE pendingSync = 1")
+    suspend fun getPendingSyncCount(): Int
+
+    @Query("SELECT COUNT(*) FROM glucose_readings WHERE pendingSync = 1")
+    fun getPendingSyncCountFlow(): Flow<Int>
 }

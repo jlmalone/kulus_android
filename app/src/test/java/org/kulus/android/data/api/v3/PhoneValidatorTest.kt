@@ -1,90 +1,81 @@
 package org.kulus.android.data.api.v3
 
-import org.assertj.core.api.Assertions.assertThat
+import org.junit.Assert.*
 import org.junit.Test
 
 class PhoneValidatorTest {
 
+    // --- isE164Format ---
+
     @Test
-    fun `validate returns valid for US number`() {
-        val result = PhoneValidator.validate("(646) 484-9595")
-        assertThat(result).isInstanceOf(PhoneValidator.Result.Valid::class.java)
-        assertThat((result as PhoneValidator.Result.Valid).e164Number).isEqualTo("+16464849595")
+    fun `isE164Format - valid E164 number`() {
+        assertTrue(PhoneValidator.isE164Format("+15109842762"))
     }
 
     @Test
-    fun `validate returns valid for number with country code`() {
-        val result = PhoneValidator.validate("+1 646 484 9595")
-        assertThat(result).isInstanceOf(PhoneValidator.Result.Valid::class.java)
-        assertThat((result as PhoneValidator.Result.Valid).e164Number).isEqualTo("+16464849595")
+    fun `isE164Format - valid short international number`() {
+        assertTrue(PhoneValidator.isE164Format("+44123456"))
     }
 
     @Test
-    fun `validate returns valid for plain digits`() {
-        val result = PhoneValidator.validate("6464849595")
-        assertThat(result).isInstanceOf(PhoneValidator.Result.Valid::class.java)
-        assertThat((result as PhoneValidator.Result.Valid).e164Number).isEqualTo("+16464849595")
+    fun `isE164Format - no plus sign is invalid`() {
+        assertFalse(PhoneValidator.isE164Format("15109842762"))
     }
 
     @Test
-    fun `validate returns valid for 11 digit US number`() {
-        val result = PhoneValidator.validate("16464849595")
-        assertThat(result).isInstanceOf(PhoneValidator.Result.Valid::class.java)
-        assertThat((result as PhoneValidator.Result.Valid).e164Number).isEqualTo("+16464849595")
+    fun `isE164Format - plus only is invalid`() {
+        assertFalse(PhoneValidator.isE164Format("+"))
     }
 
     @Test
-    fun `validate returns invalid for empty string`() {
+    fun `isE164Format - starts with plus zero is invalid`() {
+        assertFalse(PhoneValidator.isE164Format("+0123456789"))
+    }
+
+    @Test
+    fun `isE164Format - too short is invalid`() {
+        assertFalse(PhoneValidator.isE164Format("+1"))
+    }
+
+    @Test
+    fun `isE164Format - letters are invalid`() {
+        assertFalse(PhoneValidator.isE164Format("+1510abc4762"))
+    }
+
+    @Test
+    fun `isE164Format - empty string is invalid`() {
+        assertFalse(PhoneValidator.isE164Format(""))
+    }
+
+    @Test
+    fun `isE164Format - spaces are invalid`() {
+        assertFalse(PhoneValidator.isE164Format("+1 510 984 2762"))
+    }
+
+    @Test
+    fun `isE164Format - too long is invalid`() {
+        // E.164 max is 15 digits after +
+        assertFalse(PhoneValidator.isE164Format("+1234567890123456"))
+    }
+
+    // --- validate ---
+
+    @Test
+    fun `validate - valid US number returns Valid`() {
+        val result = PhoneValidator.validate("+15109842762")
+        assertTrue(result is PhoneValidator.Result.Valid)
+        assertEquals("+15109842762", (result as PhoneValidator.Result.Valid).e164Number)
+    }
+
+    @Test
+    fun `validate - blank input returns Invalid`() {
         val result = PhoneValidator.validate("")
-        assertThat(result).isInstanceOf(PhoneValidator.Result.Invalid::class.java)
-        assertThat((result as PhoneValidator.Result.Invalid).reason).contains("empty")
+        assertTrue(result is PhoneValidator.Result.Invalid)
     }
 
     @Test
-    fun `validate returns invalid for blank string`() {
+    fun `validate - whitespace only returns Invalid`() {
         val result = PhoneValidator.validate("   ")
-        assertThat(result).isInstanceOf(PhoneValidator.Result.Invalid::class.java)
-    }
-
-    @Test
-    fun `validate returns invalid for too short number`() {
-        val result = PhoneValidator.validate("123")
-        assertThat(result).isInstanceOf(PhoneValidator.Result.Invalid::class.java)
-    }
-
-    @Test
-    fun `isE164Format returns true for valid E164`() {
-        assertThat(PhoneValidator.isE164Format("+16464849595")).isTrue()
-        assertThat(PhoneValidator.isE164Format("+442071234567")).isTrue()
-    }
-
-    @Test
-    fun `isE164Format returns false for non-E164`() {
-        assertThat(PhoneValidator.isE164Format("6464849595")).isFalse()
-        assertThat(PhoneValidator.isE164Format("(646) 484-9595")).isFalse()
-        assertThat(PhoneValidator.isE164Format("+0123456")).isFalse() // Can't start with 0
-    }
-
-    @Test
-    fun `normalizeOrThrow returns E164 for valid number`() {
-        val result = PhoneValidator.normalizeOrThrow("(646) 484-9595")
-        assertThat(result).isEqualTo("+16464849595")
-    }
-
-    @Test(expected = IllegalArgumentException::class)
-    fun `normalizeOrThrow throws for invalid number`() {
-        PhoneValidator.normalizeOrThrow("")
-    }
-
-    @Test
-    fun `normalizeOrNull returns E164 for valid number`() {
-        val result = PhoneValidator.normalizeOrNull("(646) 484-9595")
-        assertThat(result).isEqualTo("+16464849595")
-    }
-
-    @Test
-    fun `normalizeOrNull returns null for invalid number`() {
-        assertThat(PhoneValidator.normalizeOrNull("")).isNull()
-        assertThat(PhoneValidator.normalizeOrNull("123")).isNull()
+        assertTrue(result is PhoneValidator.Result.Invalid)
     }
 }

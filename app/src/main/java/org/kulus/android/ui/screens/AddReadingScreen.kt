@@ -262,30 +262,6 @@ fun AddReadingScreen(
                 maxLines = 5
             )
 
-            // Snack pass toggle
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "Snack Pass",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        text = "Suppress SMS alerts for this reading",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Switch(
-                    checked = snackPass,
-                    onCheckedChange = { snackPass = it }
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             // Tag selector
             org.kulus.android.ui.components.TagSelector(
                 availableTags = org.kulus.android.data.model.GlucoseTags.PREDEFINED_TAGS,
@@ -299,6 +275,46 @@ fun AddReadingScreen(
                 },
                 modifier = Modifier.fillMaxWidth()
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Privacy section — matches iOS "Privacy" section
+            Text(
+                text = "Privacy",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Snack Pass",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = "Hide this reading from care team and observers",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(
+                        checked = snackPass,
+                        onCheckedChange = { snackPass = it }
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.weight(1f))
 

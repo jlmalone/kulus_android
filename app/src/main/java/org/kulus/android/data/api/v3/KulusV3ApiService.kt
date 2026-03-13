@@ -24,7 +24,7 @@ interface KulusV3ApiService {
      */
     @GET("readings")
     suspend fun getReadings(
-        @Query("userId") userId: String,
+        @Query("phone") userId: String,
         @Query("limit") limit: Int? = null,
         @Query("offset") offset: Int? = null,
         @Query("startDate") startDate: String? = null,

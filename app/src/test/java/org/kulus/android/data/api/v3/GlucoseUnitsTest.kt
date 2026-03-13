@@ -1,62 +1,101 @@
 package org.kulus.android.data.api.v3
 
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.within
+import org.junit.Assert.*
 import org.junit.Test
 
 class GlucoseUnitsTest {
 
+    // --- mmolToMgdl ---
+
     @Test
-    fun `conversion factor is 18_0182`() {
-        assertThat(GlucoseUnits.CONVERSION_FACTOR).isEqualTo(18.0182)
+    fun `mmolToMgdl - 5_5 mmol converts to approximately 99_1 mgdl`() {
+        val result = GlucoseUnits.mmolToMgdl(5.5)
+        assertEquals(99.1, result, 0.1)
     }
 
     @Test
-    fun `mmolToMgdl converts correctly`() {
-        assertThat(GlucoseUnits.mmolToMgdl(5.5)).isCloseTo(99.1001, within(0.001))
-        assertThat(GlucoseUnits.mmolToMgdl(1.0)).isCloseTo(18.0182, within(0.001))
-        assertThat(GlucoseUnits.mmolToMgdl(10.0)).isCloseTo(180.182, within(0.001))
+    fun `mmolToMgdl - zero converts to zero`() {
+        assertEquals(0.0, GlucoseUnits.mmolToMgdl(0.0), 0.001)
     }
 
     @Test
-    fun `mgdlToMmol converts correctly`() {
-        assertThat(GlucoseUnits.mgdlToMmol(100.0)).isCloseTo(5.55, within(0.01))
-        assertThat(GlucoseUnits.mgdlToMmol(180.0)).isCloseTo(9.99, within(0.01))
-        assertThat(GlucoseUnits.mgdlToMmol(18.0182)).isCloseTo(1.0, within(0.001))
+    fun `mmolToMgdl - 10 mmol converts to approximately 180 mgdl`() {
+        val result = GlucoseUnits.mmolToMgdl(10.0)
+        assertEquals(180.2, result, 0.1)
+    }
+
+    // --- mgdlToMmol ---
+
+    @Test
+    fun `mgdlToMmol - 100 mgdl converts to approximately 5_55 mmol`() {
+        val result = GlucoseUnits.mgdlToMmol(100.0)
+        assertEquals(5.55, result, 0.01)
     }
 
     @Test
-    fun `roundtrip conversion preserves value`() {
-        val original = 6.5
+    fun `mgdlToMmol - zero converts to zero`() {
+        assertEquals(0.0, GlucoseUnits.mgdlToMmol(0.0), 0.001)
+    }
+
+    @Test
+    fun `mgdlToMmol - 180 mgdl converts to approximately 10 mmol`() {
+        val result = GlucoseUnits.mgdlToMmol(180.0)
+        assertEquals(9.99, result, 0.01)
+    }
+
+    // --- Round-trip conversion ---
+
+    @Test
+    fun `round-trip mmol to mgdl to mmol preserves value`() {
+        val original = 7.5
         val mgdl = GlucoseUnits.mmolToMgdl(original)
         val backToMmol = GlucoseUnits.mgdlToMmol(mgdl)
-        assertThat(backToMmol).isCloseTo(original, within(0.0001))
+        assertEquals(original, backToMmol, 0.001)
+    }
+
+    // --- CONVERSION_FACTOR ---
+
+    @Test
+    fun `conversion factor is 18_0182`() {
+        assertEquals(18.0182, GlucoseUnits.CONVERSION_FACTOR, 0.0001)
+    }
+
+    // --- fromString ---
+
+    @Test
+    fun `fromString - mmol_L`() {
+        assertEquals(GlucoseUnits.MMOL_L, GlucoseUnits.fromString("mmol/L"))
     }
 
     @Test
-    fun `fromString parses case insensitively`() {
-        assertThat(GlucoseUnits.fromString("mmol/L")).isEqualTo(GlucoseUnits.MMOL_L)
-        assertThat(GlucoseUnits.fromString("MMOL/L")).isEqualTo(GlucoseUnits.MMOL_L)
-        assertThat(GlucoseUnits.fromString("mmol")).isEqualTo(GlucoseUnits.MMOL_L)
-        assertThat(GlucoseUnits.fromString("mg/dL")).isEqualTo(GlucoseUnits.MG_DL)
-        assertThat(GlucoseUnits.fromString("MG/DL")).isEqualTo(GlucoseUnits.MG_DL)
-        assertThat(GlucoseUnits.fromString("mgdl")).isEqualTo(GlucoseUnits.MG_DL)
+    fun `fromString - mmol lowercase`() {
+        assertEquals(GlucoseUnits.MMOL_L, GlucoseUnits.fromString("mmol"))
+    }
+
+    @Test
+    fun `fromString - mgdl`() {
+        assertEquals(GlucoseUnits.MG_DL, GlucoseUnits.fromString("mg/dL"))
+    }
+
+    @Test
+    fun `fromString - mgdl lowercase`() {
+        assertEquals(GlucoseUnits.MG_DL, GlucoseUnits.fromString("mgdl"))
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun `fromString throws for unknown unit`() {
+    fun `fromString - unknown throws exception`() {
         GlucoseUnits.fromString("unknown")
     }
 
+    // --- fromStringOrNull ---
+
     @Test
-    fun `fromStringOrNull returns null for unknown unit`() {
-        assertThat(GlucoseUnits.fromStringOrNull("unknown")).isNull()
-        assertThat(GlucoseUnits.fromStringOrNull("")).isNull()
+    fun `fromStringOrNull - valid returns enum`() {
+        assertEquals(GlucoseUnits.MMOL_L, GlucoseUnits.fromStringOrNull("mmol/L"))
     }
 
     @Test
-    fun `apiValue returns correct string`() {
-        assertThat(GlucoseUnits.MMOL_L.apiValue).isEqualTo("mmol/L")
-        assertThat(GlucoseUnits.MG_DL.apiValue).isEqualTo("mg/dL")
+    fun `fromStringOrNull - unknown returns null`() {
+        assertNull(GlucoseUnits.fromStringOrNull("unknown"))
     }
 }

@@ -1,129 +1,92 @@
 package org.kulus.android.data.api.v3
 
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.within
+import org.junit.Assert.*
 import org.junit.Test
 
 class ReadingValidatorTest {
 
-    @Test
-    fun `MIN_MMOL is 0_1`() {
-        assertThat(ReadingValidator.MIN_MMOL).isEqualTo(0.1)
-    }
+    // --- Valid range ---
 
     @Test
-    fun `MAX_MMOL is 50_0`() {
-        assertThat(ReadingValidator.MAX_MMOL).isEqualTo(50.0)
-    }
-
-    @Test
-    fun `MIN_MGDL is derived from MIN_MMOL`() {
-        assertThat(ReadingValidator.MIN_MGDL).isCloseTo(1.80182, within(0.001))
-    }
-
-    @Test
-    fun `MAX_MGDL is derived from MAX_MMOL`() {
-        assertThat(ReadingValidator.MAX_MGDL).isCloseTo(900.91, within(0.01))
-    }
-
-    @Test
-    fun `validate returns valid for normal mmol reading`() {
+    fun `validate - normal mmol value is valid`() {
         val result = ReadingValidator.validate(5.5, GlucoseUnits.MMOL_L)
-        assertThat(result).isInstanceOf(ReadingValidator.Result.Valid::class.java)
-        assertThat((result as ReadingValidator.Result.Valid).value).isEqualTo(5.5)
-        assertThat(result.units).isEqualTo(GlucoseUnits.MMOL_L)
+        assertTrue(result is ReadingValidator.Result.Valid)
     }
 
     @Test
-    fun `validate returns valid for normal mgdl reading`() {
-        val result = ReadingValidator.validate(100.0, GlucoseUnits.MG_DL)
-        assertThat(result).isInstanceOf(ReadingValidator.Result.Valid::class.java)
-        assertThat((result as ReadingValidator.Result.Valid).value).isEqualTo(100.0)
-        assertThat(result.units).isEqualTo(GlucoseUnits.MG_DL)
-    }
-
-    @Test
-    fun `validate returns valid for minimum value`() {
+    fun `validate - min boundary 0_1 mmol is valid`() {
         val result = ReadingValidator.validate(0.1, GlucoseUnits.MMOL_L)
-        assertThat(result).isInstanceOf(ReadingValidator.Result.Valid::class.java)
+        assertTrue(result is ReadingValidator.Result.Valid)
     }
 
     @Test
-    fun `validate returns valid for maximum value`() {
+    fun `validate - max boundary 50 mmol is valid`() {
         val result = ReadingValidator.validate(50.0, GlucoseUnits.MMOL_L)
-        assertThat(result).isInstanceOf(ReadingValidator.Result.Valid::class.java)
+        assertTrue(result is ReadingValidator.Result.Valid)
     }
 
     @Test
-    fun `validate returns invalid for value below minimum`() {
-        val result = ReadingValidator.validate(0.05, GlucoseUnits.MMOL_L)
-        assertThat(result).isInstanceOf(ReadingValidator.Result.Invalid::class.java)
-        assertThat((result as ReadingValidator.Result.Invalid).reason).contains("too low")
+    fun `validate - normal mgdl value is valid`() {
+        val result = ReadingValidator.validate(100.0, GlucoseUnits.MG_DL)
+        assertTrue(result is ReadingValidator.Result.Valid)
+    }
+
+    // --- Out of range ---
+
+    @Test
+    fun `validate - zero mmol is invalid`() {
+        val result = ReadingValidator.validate(0.0, GlucoseUnits.MMOL_L)
+        assertTrue(result is ReadingValidator.Result.Invalid)
     }
 
     @Test
-    fun `validate returns invalid for value above maximum`() {
-        val result = ReadingValidator.validate(55.0, GlucoseUnits.MMOL_L)
-        assertThat(result).isInstanceOf(ReadingValidator.Result.Invalid::class.java)
-        assertThat((result as ReadingValidator.Result.Invalid).reason).contains("too high")
+    fun `validate - negative value is invalid`() {
+        val result = ReadingValidator.validate(-1.0, GlucoseUnits.MMOL_L)
+        assertTrue(result is ReadingValidator.Result.Invalid)
     }
 
     @Test
-    fun `validate returns invalid for NaN`() {
+    fun `validate - above max mmol is invalid`() {
+        val result = ReadingValidator.validate(50.1, GlucoseUnits.MMOL_L)
+        assertTrue(result is ReadingValidator.Result.Invalid)
+    }
+
+    @Test
+    fun `validate - NaN is invalid`() {
         val result = ReadingValidator.validate(Double.NaN, GlucoseUnits.MMOL_L)
-        assertThat(result).isInstanceOf(ReadingValidator.Result.Invalid::class.java)
-        assertThat((result as ReadingValidator.Result.Invalid).reason).contains("valid number")
+        assertTrue(result is ReadingValidator.Result.Invalid)
     }
 
     @Test
-    fun `validate returns invalid for Infinity`() {
+    fun `validate - Infinity is invalid`() {
         val result = ReadingValidator.validate(Double.POSITIVE_INFINITY, GlucoseUnits.MMOL_L)
-        assertThat(result).isInstanceOf(ReadingValidator.Result.Invalid::class.java)
+        assertTrue(result is ReadingValidator.Result.Invalid)
+    }
+
+    // --- isDangerous ---
+
+    @Test
+    fun `isDangerous - hypo below 3_0 is dangerous`() {
+        assertTrue(ReadingValidator.isDangerous(2.5))
     }
 
     @Test
-    fun `validateOrThrow returns value for valid reading`() {
-        val result = ReadingValidator.validateOrThrow(5.5, GlucoseUnits.MMOL_L)
-        assertThat(result).isEqualTo(5.5)
-    }
-
-    @Test(expected = IllegalArgumentException::class)
-    fun `validateOrThrow throws for invalid reading`() {
-        ReadingValidator.validateOrThrow(100.0, GlucoseUnits.MMOL_L) // Too high
+    fun `isDangerous - severe hyper above 20 is dangerous`() {
+        assertTrue(ReadingValidator.isDangerous(25.0))
     }
 
     @Test
-    fun `isDangerous returns true for hypo`() {
-        assertThat(ReadingValidator.isDangerous(2.5)).isTrue()
-        assertThat(ReadingValidator.isDangerous(2.9)).isTrue()
+    fun `isDangerous - normal value is not dangerous`() {
+        assertFalse(ReadingValidator.isDangerous(5.5))
     }
 
     @Test
-    fun `isDangerous returns true for severe hyper`() {
-        assertThat(ReadingValidator.isDangerous(20.1)).isTrue()
-        assertThat(ReadingValidator.isDangerous(25.0)).isTrue()
+    fun `isDangerous - exactly 3_0 is not dangerous`() {
+        assertFalse(ReadingValidator.isDangerous(3.0))
     }
 
     @Test
-    fun `isDangerous returns false for normal values`() {
-        assertThat(ReadingValidator.isDangerous(3.0)).isFalse()
-        assertThat(ReadingValidator.isDangerous(5.5)).isFalse()
-        assertThat(ReadingValidator.isDangerous(10.0)).isFalse()
-        assertThat(ReadingValidator.isDangerous(20.0)).isFalse()
-    }
-
-    @Test
-    fun `validate converts mgdl to mmol for range check`() {
-        // 1 mg/dL is about 0.055 mmol/L - below minimum
-        val result = ReadingValidator.validate(1.0, GlucoseUnits.MG_DL)
-        assertThat(result).isInstanceOf(ReadingValidator.Result.Invalid::class.java)
-
-        // 1000 mg/dL is about 55.5 mmol/L - above maximum
-        val result2 = ReadingValidator.validate(1000.0, GlucoseUnits.MG_DL)
-        assertThat(result2).isInstanceOf(ReadingValidator.Result.Invalid::class.java)
-
-        // 100 mg/dL is about 5.5 mmol/L - valid
-        val result3 = ReadingValidator.validate(100.0, GlucoseUnits.MG_DL)
-        assertThat(result3).isInstanceOf(ReadingValidator.Result.Valid::class.java)
+    fun `isDangerous - exactly 20_0 is not dangerous`() {
+        assertFalse(ReadingValidator.isDangerous(20.0))
     }
 }

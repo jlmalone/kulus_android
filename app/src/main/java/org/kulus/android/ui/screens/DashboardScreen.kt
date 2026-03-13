@@ -25,7 +25,9 @@ import androidx.compose.ui.unit.dp
 fun DashboardScreen(
     onAddClick: () -> Unit = {},
     onReadingClick: (String) -> Unit = {},
-    onSignedOut: () -> Unit = {}
+    onSignedOut: () -> Unit = {},
+    onHelpClick: () -> Unit = {},
+    onApiLogClick: () -> Unit = {}
 ) {
     var selectedTab by remember { mutableStateOf(DashboardTab.TODAY) }
 
@@ -103,6 +105,8 @@ fun DashboardScreen(
                 SettingsScreen(
                     onBackClick = { selectedTab = DashboardTab.TODAY },
                     onSignedOut = onSignedOut,
+                    onHelpClick = onHelpClick,
+                    onApiLogClick = onApiLogClick,
                     hideTopBar = true
                 )
             }

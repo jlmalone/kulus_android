@@ -19,13 +19,38 @@ data class GlucoseReading(
     val color: String? = null,
     val glucoseLevel: Int? = null,
     val synced: Boolean = false,
-    val photoUri: String? = null,  // URI of photo associated with reading
-    val tags: String? = null,  // Comma-separated tags (e.g., "fasting,morning,pre-meal")
-    val profileId: String = "00000000-0000-0000-0000-000000000001"  // FK to user_profiles table
+    val photoUri: String? = null,
+    val tags: String? = null,
+    val profileId: String = "00000000-0000-0000-0000-000000000001",
+    // Sync queue fields (v5 migration)
+    val pendingSync: Boolean = false,
+    val syncAttemptCount: Int = 0,
+    val lastSyncAttempt: Long? = null,
+    // Device info (v5 migration)
+    val deviceName: String? = null
 ) {
     fun getTagsList(): List<String> {
         return tags?.split(",")?.map { it.trim() }?.filter { it.isNotEmpty() } ?: emptyList()
     }
+
+    /** Glucose reading is physiologically valid: 20-600 mg/dL (1.1-33.3 mmol/L) */
+    val isValidReading: Boolean
+        get() {
+            val mmolValue = if (units == "mg/dL") reading / 18.0182 else reading
+            return mmolValue in 1.1..33.3
+        }
+
+    /** Classify glucose range: low / normal / elevated / high */
+    val glucoseRange: String
+        get() {
+            val mmolValue = if (units == "mg/dL") reading / 18.0182 else reading
+            return when {
+                mmolValue < 3.9 -> "low"
+                mmolValue <= 7.8 -> "normal"
+                mmolValue <= 11.1 -> "elevated"
+                else -> "high"
+            }
+        }
 
     companion object {
         fun tagsToString(tagsList: List<String>): String {

@@ -53,6 +53,46 @@ The UI has been redesigned to match the iOS Hamumu app for cross-platform consis
 
 ## Current Status
 
+### ✅ Phase 5 Features (COMPLETED - March 2026, iOS Feature Parity)
+
+#### Enterprise Sync Queue - COMPLETE
+- [x] Room migration v4→v5: pendingSync, syncAttemptCount, lastSyncAttempt, deviceName columns
+- [x] SyncQueueManager with exponential backoff (cap 300s, max 10 retries, batch 50)
+- [x] Auto-sync on startup when phone is configured
+- [x] Network connectivity monitoring (NetworkMonitor via ConnectivityManager)
+- [x] Re-sync on connectivity restore (matches iOS NWPathMonitor)
+- [x] No "mobile-user" default — sync blocked without valid phone number
+
+#### API Logging - COMPLETE
+- [x] ApiLogger: Thread-safe, keeps last 100 entries, redacts API keys
+- [x] ApiLoggerInterceptor: OkHttp interceptor for full request/response capture
+- [x] ApiLogScreen: API configuration display, connectivity test, request/response viewer
+
+#### Debug Menu - COMPLETE
+- [x] Force Sync button in Settings > Debug
+- [x] Phone check showing configured number (or warning if missing)
+- [x] API Log link in Settings > Debug
+
+#### Help & FAQ - COMPLETE
+- [x] HelpScreen with expandable sections matching iOS HelpView
+- [x] Sections: Getting Started, Understanding Data, Cloud Sync, Privacy, About Kulus
+
+#### Bluetooth Contour Next One - COMPLETE
+- [x] BluetoothGlucoseService with BLE scanning and GATT connection
+- [x] Glucose Service UUID 0x1808 with measurement notifications
+- [x] SFLOAT16 (IEEE-11073) parsing for glucose values
+- [x] Device discovery, connection state management, measurement flow
+- [x] Android 12+ BLUETOOTH_SCAN/BLUETOOTH_CONNECT permissions
+
+#### Material You Icon - COMPLETE
+- [x] Monochrome layer added to adaptive icon XML (Android 13+)
+- [x] ic_launcher_monochrome.xml: Indigenous butterfly + medical cross + glucose drop
+- [x] Both ic_launcher.xml and ic_launcher_round.xml updated
+
+#### Version 1.2 (build 3)
+- [x] Version bumped from 1.1 (2) to 1.2 (3)
+- [x] Build verified: assembleDebug succeeds
+
 ### ✅ Completed (November 2025)
 
 #### Build System & Configuration
@@ -244,6 +284,10 @@ The UI has been redesigned to match the iOS Hamumu app for cross-platform consis
    - Elder mode with larger typography
    - Content descriptions for all icons
    - Non-color severity indicators
+
+## IMPORTANT: SMS Alert Behavior
+POST /readings triggers real SMS alerts to care team. Don't spam POST in loops/tests.
+Use snackPass: true for test readings. snackPass hides readings from observers (care team, family, doctors).
 
 ## Key Implementation Notes
 
@@ -532,6 +576,6 @@ git push origin feature/readings-list-screen
 ---
 
 **Created**: November 2025
-**Last Updated**: November 2025 (Phase 4 Complete)
-**Status**: Phases 1-4 complete - Core features, high-value features, onboarding/notifications/tags, and tag filtering/reminders
+**Last Updated**: March 2026 (Phase 5 — iOS Feature Parity)
+**Status**: Phases 1-5 complete — full iOS parity including enterprise sync queue, API logging, debug menu, help/FAQ, Bluetooth Contour Next One, Material You icon
 **GitHub**: https://github.com/jlmalone/kulus_android
